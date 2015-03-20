@@ -29,17 +29,11 @@ namespace CharacterControl
 		{
 			m_pContext->getGPUScreen()->AcquireRenderContextOwnership(m_pContext->m_gameThreadThreadOwnershipMask);
 
-			currentEnumState = MACHOKE_WALK;
-
 			PE::Handle hSN("SCENE_NODE", sizeof(SceneNode));
 			SceneNode *pMainSN = new(hSN)SceneNode(*m_pContext, m_arena, hSN);
 			pMainSN->addDefaultComponents();
 
 			pMainSN->m_base.setPos(pos);
-			//pMainSN->m_base.setU(pEvt->m_u);
-			//pMainSN->m_base.setV(pEvt->m_v);
-			//pMainSN->m_base.setN(pEvt->m_n);
-
 
 			RootSceneNode::Instance()->addComponent(hSN);
 
@@ -49,7 +43,7 @@ namespace CharacterControl
 				addComponent(hSN, &allowedEvts[0]);
 			}
 
-			BoxComponent box(Vector3(-1.5f, 0.f, -1.25f), Vector3(1.5f, 3.f, 1.25f), "Soldier"); //pMeshInstance->m_hAsset.getObject<Mesh>()->CreateBoxFromMesh(pEvt->m_meshFilename);
+			BoxComponent box(Vector3(-1.5f, 0.f, -1.25f), Vector3(1.5f, 3.f, 1.25f), "Soldier"); /
 			Handle h("PhysicsComponent", sizeof(PhysicsComponent));
 			pPC = new (h)PhysicsComponent(*m_pContext, m_arena, h);
 			pPC->m_Comp = this;
@@ -65,8 +59,8 @@ namespace CharacterControl
 				pSN->addDefaultComponents();
 
 				pSN->m_base.setPos(Vector3(x, 0, z));
-				pSN->m_base.turnAboutAxis(3.142f, Vector3(0, 1, 0));
-				// rotation scene node to rotate Machoke properly, since Machoke from Maya is facing wrong direction
+				pSN->m_base.turnAboutAxis(3.142f, Vector3(0, 1, 0));															// Rotation scene node to rotate Machoke properly, since Machoke from Maya is facing wrong direction
+				
 				PE::Handle hRotateSN("SCENE_NODE", sizeof(SceneNode));
 				SceneNode *pRotateSN = new(hRotateSN)SceneNode(*m_pContext, m_arena, hRotateSN);
 				pRotateSN->addDefaultComponents();
@@ -79,49 +73,34 @@ namespace CharacterControl
 				pMachokeAnimSM = new(hMachokeAnimSM)MachokeAnimationSM(*m_pContext, m_arena, hMachokeAnimSM);
 				pMachokeAnimSM->addDefaultComponents();
 
-				pMachokeAnimSM->m_debugAnimIdOffset = 0;// rand() % 3;
+				pMachokeAnimSM->m_debugAnimIdOffset = 0;
 
 				PE::Handle hSkeletonInstance("SkeletonInstance", sizeof(SkeletonInstance));
 				SkeletonInstance *pSkelInst = new(hSkeletonInstance)SkeletonInstance(*m_pContext, m_arena, hSkeletonInstance,
 					hMachokeAnimSM);
 				pSkelInst->addDefaultComponents();
 
-				pSkelInst->initFromFiles("Mutant_Mutant__Hips.skela", "Mutant", m_pContext->m_gameThreadThreadOwnershipMask);
-
-				pSkelInst->setAnimSet("Mutant_Idle_Mutant__Hips.animseta", "Mutant");
-
+				
+				pSkelInst->initFromFiles("Mutant_Mutant__Hips.skela", "Mutant", m_pContext->m_gameThreadThreadOwnershipMask);   //Load the skeleton
+	
+				pSkelInst->setAnimSet("Mutant_Idle_Mutant__Hips.animseta", "Mutant");											//Load the animation set
+	
 				PE::Handle hMeshInstance("MeshInstance", sizeof(MeshInstance));
 				MeshInstance *pMeshInstance = new(hMeshInstance)MeshInstance(*m_pContext, m_arena, hMeshInstance);
 				pMeshInstance->addDefaultComponents();
 
-				pMeshInstance->initFromFile("MutantMesh.mesha", "Mutant", m_pContext->m_gameThreadThreadOwnershipMask);
+				pMeshInstance->initFromFile("MutantMesh.mesha", "Mutant", m_pContext->m_gameThreadThreadOwnershipMask);			//Load the mesh
 
 				pSkelInst->addComponent(hMeshInstance);
 
 				// add skin to scene node
 				pRotateSN->addComponent(hSkeletonInstance);
 
+				pMainSN->addComponent(hSN);																						//Add this component to the scene
 
-				pMainSN->addComponent(hSN);
-
-				PE::Handle hIdle("Idle", sizeof(Idle));
-				idleState = new(hIdle)Idle(*m_pContext, m_arena, hIdle);
-
-				PE::Handle hwalk("Machoke_Walk", sizeof(Machoke_Walk));
-				walkState = new(hwalk)Machoke_Walk(*m_pContext, m_arena, hwalk);
-
-				PE::Handle hdead("Machoke_Dead", sizeof(Machoke_Dead));
-				deadState = new(hdead)Machoke_Dead(*m_pContext, m_arena, hdead);
-
-				PE::Handle hswipe("Machoke_Swipe", sizeof(Machoke_Swipe));
-				swipeState = new(hswipe)Machoke_Swipe(*m_pContext, m_arena, hswipe);
-
-				PE::Handle hfollow("Machoke_Follow", sizeof(Machoke_Follow));
-				followState = new(hfollow)Machoke_Follow(*m_pContext, m_arena, hfollow);
-
-				currentEnumState = MACHOKE_IDLE;
+				currentEnumState = MACHOKE_IDLE;																				//Set the initial state for this particular pokemon
 		
-				SetStateFirstTime(currentEnumState);
+				SetStateFirstTime(currentEnumState);																			//Set the reference for the current state
 				
 			}
 

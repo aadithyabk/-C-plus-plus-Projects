@@ -34,38 +34,6 @@
 #pragma comment(lib,"XAPOBaseD.lib")
 #endif
 
-
-
-
-
-
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <sceerror.h>
-#include <libdbg.h>
-#include <kernel.h>
-
-static int init(void);
-static int shutdown(void);
-
-static int init(void);
-static int shutdown(void);
-
-/* #define FILENAME   "sd0:bgm.wav" */
-#define FILENAME "AssetsOut/Sounds/bgm.wav"
-
-
-
-/*E user main thread parameters */
-
-
-
-
-#endif
-
-
 #ifndef SAFE_RELEASE
 #define SAFE_RELEASE(p)      { if (p) { (p)->Release(); (p)=NULL; } }
 #endif
@@ -435,9 +403,6 @@ HRESULT SoundManager::InitAudio(Vector3 listenerPos, Vector3 emitterPos, const f
 			PEString::s_buf, true, false, false, false, 4500,
 			Vector3(0.03f, 0.19f, 0), 1.0f, m_pContext->m_gameThreadThreadOwnershipMask);
 
-
-
-
 		sprintf(PEString::s_buf, "Reflection energy = %d mB (hundredths of decibels)", g_PRESET_PARAMS[0].Reflections);
 		DebugRenderer::Instance()->createTextMesh(
 			PEString::s_buf, true, false, false, false, 4500,
@@ -458,8 +423,6 @@ HRESULT SoundManager::InitAudio(Vector3 listenerPos, Vector3 emitterPos, const f
 		m_pContext->getGPUScreen()->ReleaseRenderContextOwnership(m_pContext->m_gameThreadThreadOwnershipMask);
 	}
 
-
-
 	//
 	// Initialize X3DAudio
 	//  Speaker geometry configuration on the final mix, specifies assignment of channels
@@ -472,20 +435,15 @@ HRESULT SoundManager::InitAudio(Vector3 listenerPos, Vector3 emitterPos, const f
 
 	X3DAudioInitialize( dwChannelMask, SPEEDOFSOUND, g_audioState.x3DInstance );
 
-
 	g_audioState.vListenerPos = X3DAUDIO_VECTOR( listenerPos.m_x, listenerPos.m_y, listenerPos.m_z );
 	//g_audioState.vListenerPos = X3DAUDIO_VECTOR( 0, 0,0 );Vector3(-5.12,0,45.74));
 	g_audioState.vEmitterPos = X3DAUDIO_VECTOR(emitterPos.m_x, emitterPos.m_y, emitterPos.m_z);
-
 
 	SceneNode* _CameraSceneNode = CameraManager::Instance()->getActiveCamera()->getCamSceneNode();
 	Vector3 color = Vector3(1.0f, 0.0f, 0.0f);
 	Vector3 linepts1[] = {Vector3(emitterPos.m_x,0,emitterPos.m_z), color, Vector3(emitterPos.m_x,50,emitterPos.m_z), color};	
 	//DebugRenderer::Instance()->createLineMesh(true, _CameraSceneNode->m_worldTransform, &linepts1[0].m_x, 2, 2000);
 	
-	
-
-
 	g_audioState.fListenerAngle = 0;
 	g_audioState.fUseListenerCone = TRUE;
 	g_audioState.fUseInnerRadius = TRUE;
@@ -601,10 +559,6 @@ HRESULT SoundManager::InitAudioFoot(Vector3 listenerPos, Vector3 emitterPos)
 		return hr;
 	}
 
-	
-	//
-	// Create a submix voice
-	//
 
 	// Performance tip: you need not run global FX with the sample number
 	// of channels as the final mix.  For example, this sample runs
@@ -793,10 +747,6 @@ HRESULT SoundManager::PrepareAudio(SoundManager* soundManager,const char* filena
 
 	prevFile = filename;
 
-	//Create APO
-	
-	//CreateFX
-
 	return S_OK;
 }
 
@@ -829,20 +779,17 @@ HRESULT SoundManager::UpdateAudio( float fElapsedTime,Vector3 listenerPos,Vector
 
 			Vector3 vlisPos = Vector3(g_audioState.vListenerPos.x,g_audioState.vListenerPos.y,g_audioState.vListenerPos.z);
 			Vector3 lisPos = Vector3(g_audioState.listener.Position.x,g_audioState.listener.Position.y,g_audioState.listener.Position.z);
-			 X3DAUDIO_VECTOR res =  X3DAUDIO_VECTOR((vlisPos.m_x - lisPos.m_x),(vlisPos.m_y - lisPos.m_y),(vlisPos.m_z - lisPos.m_z));
+			X3DAUDIO_VECTOR res =  X3DAUDIO_VECTOR((vlisPos.m_x - lisPos.m_x),(vlisPos.m_y - lisPos.m_y),(vlisPos.m_z - lisPos.m_z));
 			X3DAUDIO_VECTOR vDelta = res;
 
 			g_audioState.fListenerAngle = float( atan2( vDelta.x, vDelta.z ) );
 
-			//vDelta.y = 0.0f;
 			Vector3 vDelt = Vector3(vDelta.x, vDelta.y, vDelta.z);
 			vDelt.normalize();
 			vDelta.x = vDelt.m_x;
 			vDelta.y = vDelt.m_y;
 			vDelta.z = vDelt.m_z;
 
-			//D3DXVec3Normalize( &vDelta, &vDelta );
-			
 			g_audioState.listener.OrientFront.x = vDelta.x;
 			g_audioState.listener.OrientFront.y = vDelta.y;
 			g_audioState.listener.OrientFront.z = vDelta.z;
@@ -852,21 +799,13 @@ HRESULT SoundManager::UpdateAudio( float fElapsedTime,Vector3 listenerPos,Vector
 		}
 		else
 		{
-			PEINFO("Simply Rotating");
+			//Rotating at place
 			g_audioState.listener.OrientFront.x = -listenerOrient.m_x;
 			g_audioState.listener.OrientFront.y = -listenerOrient.m_y;
 			g_audioState.listener.OrientFront.z = -listenerOrient.m_z;
 			
 		}
-		if (yHasChanged)
-		{
-			PEINFO("Y has changed");
-			g_audioState.listener.OrientFront.x = -listenerOrient.m_x;
-			g_audioState.listener.OrientFront.y = -listenerOrient.m_y;
-			g_audioState.listener.OrientFront.z = -listenerOrient.m_z;
-			yHasChanged = false;
-		}
-		
+	
 		if (g_audioState.fUseListenerCone)
 		{
 			g_audioState.listener.pCone = (X3DAUDIO_CONE*)&Listener_DirectionalCone;

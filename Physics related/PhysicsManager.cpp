@@ -19,15 +19,15 @@ void PhysicsManager::do_UPDATE(Events::Event *pEvt)
 	{
 		JointSceneNode *jSN1 = m_JointSceneNodes[i];
 		
-		for(int j = i+1; j < m_JointSceneNodes.m_size; j++)
+		for(int j = i+1; j < m_JointSceneNodes.m_size; j++)  //Loop thorugh all joints
 		{
 			JointSceneNode *jSN2 = m_JointSceneNodes[j];
-			Physics *pC1 = jSN1->m_Physics;
+			Physics *pC1 = jSN1->m_Physics;   //Physics component of that node
 			Physics *pC2 = jSN2->m_Physics;
 			const char* sample = jSN1->name.c_str();
 			
-			Vector3 centerTocenter = (jSN1->m_worldTransform.getPos()) - (jSN2->m_worldTransform.getPos());
-			float length = centerTocenter.length();
+			Vector3 centerTocenter = (jSN1->m_worldTransform.getPos()) - (jSN2->m_worldTransform.getPos());  
+			float length = centerTocenter.length(); //Distance between the centres of sphere
 			
 		
 				if((pC1->m_playerNum == 1 && pC2->m_playerNum == 2 ) || (pC1->m_playerNum == 2 && pC2->m_playerNum == 1))
@@ -37,26 +37,25 @@ void PhysicsManager::do_UPDATE(Events::Event *pEvt)
 						if(!(((jSN1->m_jointNum ==5 && jSN2->m_jointNum == 1) || (jSN1->m_jointNum ==1 && jSN2->m_jointNum == 5))))
 						{
 							
-							if(centerTocenter.length() < (pC1->radius + pC2->radius))
+							//Sphere-Sphere collision
+							if(centerTocenter.length() < (pC1->radius + pC2->radius)) 
 							{
 								
 								Vampire* _vampire1 = pGameObjectManagerAddon->getVampire(1);
 								Vampire* _vampire2 = pGameObjectManagerAddon->getVampire(2);
 								
-								if(_vampire1->m_MovementSM->m_state == 4)
+								if(_vampire1->m_MovementSM->m_state == 4) //If he is in punch state
 								{	
-									/vampire2->m_vampireHealth -= 0.5;
-									
+									vampire2->m_vampireHealth -= 0.5;  
 									
 									if(_vampire2->m_vampireHealth<=0)
-										_vampire2->onDeath(_vampire2);
+										_vampire2->onDeath(_vampire2);  //Vampire is  Dead
+										
 									_vampire2->CollisionDetected(_vampire1, jSN1, _vampire2, jSN2);
 								}
 								else 
 								{
 									_vampire1->m_vampireHealth -= 0.5;
-								
-	
 									if(_vampire1->m_vampireHealth==0)
 										_vampire1->onDeath(_vampire1);
 									_vampire1->CollisionDetected(_vampire1, jSN1, _vampire2, jSN2);
@@ -70,18 +69,7 @@ void PhysicsManager::do_UPDATE(Events::Event *pEvt)
 	}
 }
 
-void PhysicsManager::do_POST_UPDATE(Events::Event *pEvt)
-{
-	/*for(int i=0 ; i<m_JointSceneNodes.m_size ; i++)
-	{
-		JointSceneNode _SceneNode = m_JointSceneNodes[i];
 
-		JointSceneNode *_SN = m_JointSceneNodes[i];//.getObject<JointSceneNode>();
-		//_SN->m_base.setPos(_SN->m_PreviousPosition);
-
-		_JointSceneNode.getObject<JointSceneNode>()->m_Physics->DrawBox(_JointSceneNode);
-	}*/
-}
 
 
 bool PhysicsManager::Raycast(Vector3 _Point1, Vector3 _Point2, AxisAlignedBB _Box, Handle _SceneNodeHandle, Vector3* _PointOfIntersection, int _Plane)
@@ -100,7 +88,8 @@ bool PhysicsManager::Raycast(Vector3 _Point1, Vector3 _Point2, AxisAlignedBB _Bo
 	float _Part2 = (m_A*(_Point2.m_x - _Point1.m_x) - m_B*(_Point2.m_y-_Point1.m_y) - m_C*(_Point2.m_z-_Point1.m_z));
 	float t = _Part1/_Part2;
 
-	float x = _Point1.m_x + t*(_Point2.m_x - _Point1.m_x);
+	//Line in paranetric form
+	float x = _Point1.m_x + t*(_Point2.m_x - _Point1.m_x);  
 	float y = _Point1.m_y + t*(_Point2.m_y - _Point1.m_y);
 	float z = _Point1.m_z + t*(_Point2.m_z - _Point1.m_z);
 
@@ -109,9 +98,6 @@ bool PhysicsManager::Raycast(Vector3 _Point1, Vector3 _Point2, AxisAlignedBB _Bo
 	_PointOfIntersection->m_x = x;
 	_PointOfIntersection->m_y = y;
 	_PointOfIntersection->m_z = z;
-
-	//_EachPlane->m_NormalVector.dotProduct(_Point1);
-
 
 	if(_Part2 == 0)
 		return false;

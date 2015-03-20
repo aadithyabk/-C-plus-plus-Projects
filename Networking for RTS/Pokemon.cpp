@@ -27,11 +27,8 @@ namespace CharacterControl
 		Pokemon::Pokemon(PE::GameContext &context, PE::MemoryArena arena, PE::Handle hMyself)
 			: Component(context, arena, hMyself)
 		{
-			PE::Handle hIdle("Idle", sizeof(Idle));
-			idleState = new(hIdle)Idle(*m_pContext, m_arena, hIdle);
-			idleState->m_parentPokemon = this;
-
-
+			//Create the references to all the required states
+			
 			PE::Handle hMachokewalk("Machoke_Walk", sizeof(Machoke_Walk));
 			machokeWalkState = new(hMachokewalk)Machoke_Walk(*m_pContext, m_arena, hMachokewalk);
 			machokeWalkState->m_parentPokemon = this;
@@ -83,8 +80,11 @@ namespace CharacterControl
 		}
 		void Pokemon::ChangeState(m_states nextState)
 		{
+			//Exit the current state
 			m_currentState->OnExit();
 
+			
+			//Update the currentState to next state
 			currentEnumState = nextState;
 			if (currentEnumState == WALK)
 				m_currentState = machokeWalkState;
@@ -116,11 +116,13 @@ namespace CharacterControl
 			if (currentEnumState == MINION_IDLE)
 				m_currentState = minionIdleState;
 
+			//Enter the next state
 			m_currentState->OnEnter();
 		}
 
 		void Pokemon::do_UPDATE(PE::Events::Event *pEvt)
 		{
+			//Current State gets updated
 			m_currentState->Update(pEvt);
 		}
 

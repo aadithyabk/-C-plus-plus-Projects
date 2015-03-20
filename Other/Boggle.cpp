@@ -1,5 +1,6 @@
 trie_node *getNewNode()
 {
+	//Creates new node for the trie
 	trie_node *newNode;
 	newNode = (trie_node*)malloc(sizeof(trie_node));
 	if (newNode)
@@ -15,6 +16,8 @@ trie_node *getNewNode()
 
 void insertLetter(trie_t *trie, std::string tempStr)
 {
+	//Inserts letter into the trie
+
 	char *key;
 	int size = tempStr.size() + 1;
 	key = new char[size];
