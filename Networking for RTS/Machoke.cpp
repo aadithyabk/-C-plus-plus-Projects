@@ -111,8 +111,5 @@ namespace CharacterControl
 			//Component::addDefaultComponents();
 			Pokemon::addDefaultComponents();
 		}
-		
 	}
-
-	
 }
