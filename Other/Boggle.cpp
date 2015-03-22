@@ -167,7 +167,6 @@ void boggle(struct Node **Letters, std::vector<std::string> &Output, int size, t
 	{
 		findStringUsingTrie(Letters, Letters[i],Output,  count,  trie, temp);
 	}
-	
 }
 
 
