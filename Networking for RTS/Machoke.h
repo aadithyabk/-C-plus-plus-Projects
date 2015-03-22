@@ -28,7 +28,6 @@ namespace CharacterControl{
 			Machoke(PE::GameContext &context, PE::MemoryArena arena, PE::Handle hMyself,Vector3 pos);
 
 			virtual void addDefaultComponents();
-
 			
 			Idle *idleState;
 			Machoke_Walk *walkState;
