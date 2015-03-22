@@ -1,6 +1,4 @@
 
-
-
 void PhysicsManager::do_UPDATE(Events::Event *pEvt)
 {
 	int CollisionMatrix[7][7];
