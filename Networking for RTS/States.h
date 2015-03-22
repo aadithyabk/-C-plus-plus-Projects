@@ -18,6 +18,7 @@ namespace CharacterControl{
 			States(PE::GameContext &context, PE::MemoryArena arena, PE::Handle hMyself);
 
 			Pokemon *m_parentPokemon;
+			
 			PE::Handle m_hParentPokemonAnimationHandle;
 
 			virtual void addDefaultComponents();
