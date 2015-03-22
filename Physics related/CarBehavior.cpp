@@ -38,7 +38,6 @@ namespace PE{
 
 		void CarBehavior::do_calculateResultant(int carNum)
 		{
-
 			SceneNode *pSN_body;
 			SceneNode *pSN_FLT;
 			SceneNode *pSN_FRT;
