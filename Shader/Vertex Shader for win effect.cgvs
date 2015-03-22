@@ -1,0 +1,93 @@
+#ifndef DETAILEDMESH_VS_cg
+#define DETAILEDMESH_VS_cg
+#define DETAILEDMESH_GLOW_PS
+#include "APIAbstraction.gpu"
+#include "StandardConstants.fx"
+#include "DetailedMesh_Structs.fx"
+
+DETAILED_MESH_SHADOWED_PS_IN DetailedMesh_Shadowed_VS(DETAILED_MESH_VS_IN vIn)
+{
+    DETAILED_MESH_SHADOWED_PS_IN vOut;
+	float3 pos = vIn.iPosL;
+	float3 originalPos = pos;
+
+	Matrix WVP = gWVP;
+	Matrix W = gW;
+	Matrix WInverse = gUnused;
+
+	//THE WORLD POSITION OF THE VERTEX
+	float4 position   = mul(float4(pos, 1.0), W);
+
+	//USING 2nd UV SET
+	float vertexRatio = vIn.iTexCoord2.x;
+	float4 windSource;
+	float3 windEffect;
+	float  windIntensity;
+	float4 windEffect1Final;
+	float4 windEffect2Final;
+	float4 windEffect3Final;
+	float4 windEffectFinal;
+	float windIntensityRatio;
+
+	windEffect1Final = float4(0,0,0,0);
+	windEffect2Final = float4(0,0,0,0);
+
+	//2 SOLDIER WINDSOURCE
+	if(windSource0[3] == 1.0)
+	{
+		windSource = float4(windSource0[0], 0, windSource0[2], windSource0[3]);
+		windEffect = -1 * float3(windSource.x-position.x, windSource.y-position.y, windSource.z-position.z);
+		windIntensity = (windEffect.x*windEffect.x + windEffect.z*windEffect.z);
+		
+		windIntensityRatio = 10/windIntensity;
+		if(windIntensityRatio > 10)
+			windIntensityRatio = 10;
+
+		windEffect1Final = windEffect1Final * windIntensityRatio * 0.4;
+	}
+
+	if(windSource1[3] == 1.0)
+	{
+		windSource = float4(windSource1[0], 0, windSource1[2], windSource1[3]);
+		windEffect = -1 * float3(windSource.x-position.x, windSource.y-position.y, windSource.z-position.z);
+		windIntensity = (windEffect.x*windEffect.x + windEffect.z*windEffect.z);
+		
+		windIntensityRatio = 10/windIntensity;
+		if(windIntensityRatio > 10)
+			windIntensityRatio = 10;
+
+		windEffect2Final = windEffect2Final * windIntensityRatio * 0.4;
+	}
+
+	//CAMERA WINDSOURCE
+	{
+		windSource = float4(windSource2[0], 0, windSource2[2], windSource2[3]);
+		windEffect = -1 * float3(windSource.x-position.x, windSource.y-position.y, windSource.z-position.z);
+		windIntensity = (windEffect.x*windEffect.x + windEffect.z*windEffect.z);
+		
+		windIntensityRatio = 10/windIntensity;
+		if(windIntensityRatio > 10)
+			windIntensityRatio = 10;
+
+		windEffect3Final = windEffect3Final * windIntensityRatio;
+	}
+
+	windEffectFinal = float4(0,0,0,0);
+	windEffectFinal = (windEffect3Final + windEffect1Final + windEffect2Final) * keyToggle[1];
+
+	//ADDING EFFECTS OF WIND
+	pos += vertexRatio * windEffectFinal;
+	pos.y = originalPos.y;
+
+   	 vOut.iPosH = mul(float4(pos, 1.0), WVP);                 //Homogenous coordinates	
+   	 vOut.iNormalW = mul(float4(vIn.iNormal, 0), W).xyz;	  
+   	 vOut.iPosW =  mul(float4(pos, 1.0), W).xyz;		
+   	 vOut.iTangentW = mul(float4(vIn.iTangent, 1.0), W).xyz;
+    	vOut.iTexCoord = vIn.iTexCoord;
+   	 vOut.iProjTexCoord = mul(float4(vOut.iPosW, 1.0), gLightWVP);
+	vOut.iTexCoord2 = vIn.iTexCoord2;
+    return vOut;
+}
+VS_wrapper_DETAILED_MESH_SHADOWED(DetailedMesh_Shadowed_VS)
+
+#endif
