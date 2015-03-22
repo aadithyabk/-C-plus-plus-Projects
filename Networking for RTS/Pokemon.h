@@ -8,7 +8,6 @@
 #include "../Events/Events.h"
 #include "PrimeEngine/Scene/Floor.h"
 
-
 namespace CharacterControl{
 
 	namespace Components {
