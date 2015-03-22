@@ -116,7 +116,6 @@ void CameraSceneNode::do_CALCULATE_TRANSFORMATIONS(Events::Event *pEvt)
 
 	//Calculate four points of near plane
 	
-	
 	Vector3 nearTopRight = Vector3(0,0,0);
 	nearTopRight = nearTopRight + Vector3(0,0,m_near); 
 	nearTopRight = nearTopRight + Vector3(0, Hnear/2, 0) + Vector3((Wnear/2) ,0, 0);
