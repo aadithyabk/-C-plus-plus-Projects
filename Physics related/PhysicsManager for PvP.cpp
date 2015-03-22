@@ -1,16 +1,6 @@
 
 void PhysicsManager::do_UPDATE(Events::Event *pEvt)
 {
-	int CollisionMatrix[7][7];
-	for(int j = 0;j<7; j++)
-		for(int k = 0;k<7; k++)
-			CollisionMatrix[j][k] = 0;
-
-	CollisionMatrix[0][6] = 1; CollisionMatrix[6][0] = 1; 
-	CollisionMatrix[1][6] = 1; CollisionMatrix[6][1] = 1; 
-	CollisionMatrix[2][6] = 1; CollisionMatrix[6][2] = 1; 
-	CollisionMatrix[3][5] = 1; CollisionMatrix[5][3] = 1; 
-	CollisionMatrix[4][5] = 1; CollisionMatrix[5][4] = 1; 
 
 	ClientGameObjectManagerAddon *pGameObjectManagerAddon = (ClientGameObjectManagerAddon *)(m_pContext->get<CharacterControlContext>()->getGameObjectManagerAddon());
 	for(int i = 0; i < m_JointSceneNodes.m_size; i++)
