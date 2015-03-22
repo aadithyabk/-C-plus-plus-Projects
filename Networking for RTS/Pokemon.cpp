@@ -83,7 +83,6 @@ namespace CharacterControl
 			//Exit the current state
 			m_currentState->OnExit();
 
-			
 			//Update the currentState to next state
 			currentEnumState = nextState;
 			if (currentEnumState == WALK)
