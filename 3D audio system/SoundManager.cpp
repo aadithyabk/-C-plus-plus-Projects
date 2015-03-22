@@ -40,7 +40,6 @@
 #define SAFE_DELETE_ARRAY(p) { if (p) { delete[] (p);   (p)=NULL; } }
 #endif   
 
-
 const INT           XMIN = -10;
 const INT           XMAX = 10;
 const INT           ZMIN = -10;
