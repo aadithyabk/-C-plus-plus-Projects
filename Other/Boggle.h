@@ -23,7 +23,6 @@ struct trie_t
 {
 	trie_node *root;
 	int count;
-
 };
 
 struct Node
