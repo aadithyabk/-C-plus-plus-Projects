@@ -93,9 +93,7 @@ static const X3DAUDIO_DISTANCE_CURVE       Emitter_LFE_Curve          = { (X3DAU
 
 // Specify reverb send level distance curve such that reverb send increases
 // slightly with distance before rolling off to silence.
-// With the direct channels being increasingly attenuated with distance,
-// this has the effect of increasing the reverb-to-direct sound ratio,
-// reinforcing the perception of distance.
+
 static const X3DAUDIO_DISTANCE_CURVE_POINT Emitter_Reverb_CurvePoints[3] = { 0.0f, 0.5f, 0.75f, 1.0f, 1.0f, 0.0f };
 static const X3DAUDIO_DISTANCE_CURVE       Emitter_Reverb_Curve          = { (X3DAUDIO_DISTANCE_CURVE_POINT*)&Emitter_Reverb_CurvePoints[0], 3 };
 
