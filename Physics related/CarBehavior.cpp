@@ -120,82 +120,22 @@ namespace PE{
 				m_SceneNodes[i]->m_Physics->AddForces(h[i]); //Add forces to the body
 			}
 
-			PEINFO("The position before addition was %f, %f, %f", pSN_body->m_base.getPos().m_y,pSN_FLT->m_Physics->NewPosition.m_y, pSN_RLT->m_Physics->NewPosition.m_y);
-			if(pSN_FLT->m_Physics->NewPosition.m_y < pSN_RLT->m_Physics->NewPosition.m_y)
-				PEINFO("");
+			
 
 			float _Diff = pSN_FLT->m_Physics->NewPosition.m_y - pSN_RLT->m_Physics->NewPosition.m_y;
-			/*if(_Diff < 0)
-			_Diff *=10;
-			else
-			_Diff/=2;*/
+			
 
 			//float finalY = pSN_RLT->m_Physics->NewPosition.m_y + (_Diff);
 			Vector3 _Initial = pSN_body->m_base.getPos();
 			float finalY = pSN_RLT->m_Physics->NewPosition.m_y + (_Diff)/2;
 
 			forceResultant += _Initial;
-			//forceResultant.m_y  = finalY;
-			//forceResultant.m_x = 0;
-			//forceResultant.m_z = 0;
-			//PEINFO("The position after addition was %f", forceResultant.m_y);
+
 
 			Vector3 _AngleAlongRamp = pSN_FLT->m_Physics->NewPosition - pSN_RLT->m_Physics->NewPosition;
 
 
-			if(pSN_FLT->m_Physics->m_state == Physics::ONRAMP)
-			{	if(pSN_FLT->m_Physics->carNum == 1)
-				{	
-						if(m_velocity<0.2)
-							{
-						forceResultant.m_y += 0.5;
-						}
-						else
-							forceResultant.m_y += 1;
-
-						float dist;
-						dist = pSN_FLT->pCar->DistanceFromRamp;
-						if(dist > pSN_FLT->pCar->m_maxDist +2  )
-						{
-							//Vector3 moveForward =pSN_FLT->m_base* (pSN_FLT->m_worldTransform.inverse()*pSN_FLT->m_base.getPos() + Vector3(0,0,5));
-							//forceResultant.m_x += moveForward.m_x;
-
-							//pSN_body->m_base.moveForward(2);
-							//forceResultant.m_y += 1;
-
-							if(inAir < 40)
-							{
-
-								if(m_velocity<0.2)
-								{
-								forceResultant.m_z -=0.1;
-								forceResultant.m_y-=1;
-								}
-								else 
-								{
-								forceResultant.m_z -=0.3 ;
-								forceResultant.m_y-=0.6;
-								}
-								
-
-								pSN_body->m_base.turnUp(-3.145/160);
-								inAir++;
-
-							}
-
-							////PEINFO("Final rotation while using = %f",finalRotation);
-							//pSN_body->m_base.turnDown(finalRotation);
-							if(inAir == 40)
-							{
-								pSN_FLT->m_Physics->m_state = Physics::GROUND;
-								pSN_FRT->m_Physics->m_state = Physics::GROUND;
-								pSN_RLT->m_Physics->m_state = Physics::GROUND;
-								pSN_RRT->m_Physics->m_state = Physics::GROUND;
-							}
-						}
-						
-					}
-			}
+			
 					else 
 							inAir=0;
 					new_time1 = (clock()- previousTime1)/10000;
@@ -228,59 +168,50 @@ namespace PE{
 							turnCount ++;
 
 						}			
-						//Vector3 forward  = pSN_FLT->m_worldTransform.getN();
-						//forward.m_x = 0;
-						//Vector3 direction = _AngleAlongRamp;//pSN_FLT->m_worldTransform.getPos() - pSN_RLT->m_worldTransform.getPos();
-						//direction.m_x = 0;
+						Vector3 forward  = pSN_FLT->m_worldTransform.getN();
+						forward.m_x = 0;
+						Vector3 direction = _AngleAlongRamp;//pSN_FLT->m_worldTransform.getPos() - pSN_RLT->m_worldTransform.getPos();
+						direction.m_x = 0;
 
-						//forward.m_x = 0;
-						//forward.normalize();
+						forward.m_x = 0;
+						forward.normalize();
 
-						//float angle = acos((forward.dotProduct(direction))/(forward.length() * direction.length()));
-						//float _Angle = angle * (3.14 /180);
+						float angle = acos((forward.dotProduct(direction))/(forward.length() * direction.length()));
+						float _Angle = angle * (3.14 /180);
 
-						//if(_Angle != 0)
-						//	_Angle = -_Angle;
+						if(_Angle != 0)
+							_Angle = -_Angle;
 
-						//Vector3 angleSign = forward.crossProduct(direction);
-						//int _Sign = 1;
-						//if(angleSign.m_x > 0)
-						//	_Sign = -1;
-						//_Angle *= (float)_Sign;
+						Vector3 angleSign = forward.crossProduct(direction);
+						int _Sign = 1;
+						if(angleSign.m_x > 0)
+							_Sign = -1;
+						_Angle *= (float)_Sign;
 
-						////_Angle *= (angleSign.m_x/fabs(angleSign.m_x));
-						//PEINFO("sign is %d and angle %f",_Sign,_Angle);
+						_Angle *= (angleSign.m_x/fabs(angleSign.m_x));
+						
 						////-ve turn down
 						////+VE turn up 
-						///*if(_Angle < 0)
-						//{*/
-						//	//pSN_body->m_base.turnUp(_Angle);
-						//	finalRotation= angle;
-						//	
-						////}
-						///*else if(_Angle < 0)
-						//{
-						//	pSN_body->m_base.turnUp(_Angle);
-						//}*/
+						if(_Angle < 0)
+						{
+							pSN_body->m_base.turnUp(_Angle);
+							finalRotation= angle;
+							
+						}
+						else if(_Angle < 0)
+						{
+							pSN_body->m_base.turnUp(_Angle);
+						}
 					}
 					else
 						turnCount = 0;
-					/*if(pSN_FLT->m_Physics->IsCollisionWithRamp == true ||	pSN_FRT->m_Physics->IsCollisionWithRamp == true ||	pSN_RRT->m_Physics->IsCollisionWithRamp == true ||	pSN_RLT->m_Physics->IsCollisionWithRamp == true )
-					{
-					Vector3 N1 = pSN_body->m_base.getN();
-					pSN_body->m_base.turnAboutAxis(-3.142/10000,Vector3(1,0,0));
-					pSN_FLT->m_Physics->IsCollisionWithRamp = false;
-					pSN_FRT->m_Physics->IsCollisionWithRamp = false;
-					pSN_RLT->m_Physics->IsCollisionWithRamp = false;
-					pSN_RRT->m_Physics->IsCollisionWithRamp = false;
-					}*/
+			
 					pSN_FLT->m_Physics->m_ForceList.clear();
 					pSN_FRT->m_Physics->m_ForceList.clear();
 					pSN_RLT->m_Physics->m_ForceList.clear();
 					pSN_RRT->m_Physics->m_ForceList.clear();
 				
-					//pSN_RLT->m_Physics->m_state = PE::Components::Physics::States::GROUND;
-					//pSN_FRT->m_Physics->m_ForceList.clear();
+			
 				}
 		}
 	}

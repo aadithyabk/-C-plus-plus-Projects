@@ -5,11 +5,7 @@
 #include "../../PrimeEngine/Scene/SH_DRAW.h"
 #include "../../PrimeEngine/Events/Component.h"
 #include "../../PrimeEngine/Scene/DebugRenderer.h"
-//#include "xapo.h"
-//#include "xapofx.h"
-//#include "../../../Microsoft DirectX SDK (June 2010)/Include/XAPO.h"
-//#include "../../../Microsoft DirectX SDK (June 2010)/Include/XAudio2fx.h"
-//#include "../../../Microsoft DirectX SDK (June 2010)/Include/XAPOFX.h"
+
 
 #if APIABSTRACTION_D3D9_PC 
 #if (_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/)
@@ -21,18 +17,6 @@
 #endif
 #endif
 
-#if APIABSTRACTION_X360
-#include "../../CharacterControl/CharacterControlContext.h"
-#include "../../CharacterControl/CharacterControlIncludes.h"
-#include <XAPO.h>
-#include <XAPOFX.h>
-#include <XAPOBase.h>
-#include <xtl.h>
-#include "../../Atg/AtgUtil.h"
-#include "../../Atg/AtgAudio.h"
-#pragma comment(lib,"XAPOFXD.lib")
-#pragma comment(lib,"XAPOBaseD.lib")
-#endif
 
 #ifndef SAFE_RELEASE
 #define SAFE_RELEASE(p)      { if (p) { (p)->Release(); (p)=NULL; } }
@@ -43,6 +27,8 @@
 #define INPUTCHANNELS 1
 #define OUTPUTCHANNELS 8
 #include "../Scene/CameraManager.h"
+
+//Little Endian
 #define fourccRIFF 'FFIR'
 #define fourccDATA 'atad'
 #define fourccFMT ' tmf'
@@ -237,11 +223,11 @@ void SoundManager::MSDNtype(BYTE * pDataBuffer, const char* filename)
 {
 		DWORD dwChunkSize;
 		DWORD dwChunkPosition;
-//check the file type, should be fourccWAVE or 'XWMA'
+		//check the file type, should be fourccWAVE or 'XWMA'
 		DWORD filetype;
 		static int i = 0;
 		GenerateAudioPathName(*m_pContext, filename, "Default", "Sound", PEString::s_buf, PEString::BUF_SIZE);
-		//TCHAR * strFileName = __TEXT("C:\\SampleTest\\gamepipe\\PrimeEngine\\DL\\PEWorkspace\\AssetsOut\\Default\\Sound\\test.wav");
+		
 		TCHAR * strFileName = __TEXT(PEString::s_buf);
 		HRESULT hr;
 		HANDLE hfile = CreateFile(strFileName, GENERIC_READ,0,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL);
@@ -506,166 +492,6 @@ HRESULT SoundManager::InitAudio(Vector3 listenerPos, Vector3 emitterPos, const f
 
 	return S_OK;
 }
-
-HRESULT SoundManager::InitAudioFoot(Vector3 listenerPos, Vector3 emitterPos)
-{
-	
-	ZeroMemory( &g_audioStateFoot, sizeof( AUDIO_STATE ) );
-
-	//
-	// Initialize XAudio2
-	//
-	CoInitializeEx( NULL, COINIT_MULTITHREADED );
-
-	UINT32 flags = 0;
-#ifdef _DEBUG
-	flags |= XAUDIO2_DEBUG_ENGINE;
-#endif
-
-	HRESULT hr;
-
-	if( FAILED( hr = XAudio2Create( &g_audioStateFoot.pXAudio2,0, XAUDIO2_DEFAULT_PROCESSOR ) ) )
-		return hr;
-
-	//
-	// Create a mastering voice
-	//
-	if( FAILED( hr = g_audioStateFoot.pXAudio2->CreateMasteringVoice( &g_audioStateFoot.pMasteringVoice ) ) )
-	{
-		SAFE_RELEASE( g_audioStateFoot.pXAudio2 );
-		return hr;
-	}
-
-	// Check device details to make sure it's within our sample supported parameters
-	XAUDIO2_VOICE_DETAILS details;
-	g_audioStateFoot.pMasteringVoice->GetVoiceDetails( &details ); 
-  
-	DWORD dwChannelMask;
-	g_audioStateFoot.pMasteringVoice->GetChannelMask( &dwChannelMask );
-	g_audioStateFoot.dwChannelMask = dwChannelMask;
-	g_audioStateFoot.nChannels = details.InputChannels;
-
-	//
-	// Create reverb effect
-	//
-	flags = 0;
-#ifdef _DEBUG
-	flags |= XAUDIO2FX_DEBUG;
-#endif
-
-	if( FAILED( hr = XAudio2CreateReverb( &g_audioStateFoot.pReverbEffect, flags ) ) )
-	{
-		SAFE_RELEASE( g_audioStateFoot.pXAudio2 );
-		return hr;
-	}
-
-
-	// Performance tip: you need not run global FX with the sample number
-	// of channels as the final mix.  For example, this sample runs
-	// the reverb in mono mode, thus reducing CPU overhead.
-	XAUDIO2_EFFECT_DESCRIPTOR effects[] = { { g_audioStateFoot.pReverbEffect, TRUE, 1 } };
-	XAUDIO2_EFFECT_CHAIN effectChain = { 1, effects };
-
-	if( FAILED( hr = g_audioStateFoot.pXAudio2->CreateSubmixVoice( &g_audioStateFoot.pSubmixVoice, 1,
-															   details.InputSampleRate, 0, 0,
-															   NULL, &effectChain ) ) )
-	{
-		SAFE_RELEASE( g_audioStateFoot.pXAudio2 );
-		SAFE_RELEASE( g_audioStateFoot.pReverbEffect );
-		return hr;
-	}
-
-	// Set default FX params
-	XAUDIO2FX_REVERB_PARAMETERS native;
-	ReverbConvertI3DL2ToNative( &g_PRESET_PARAMS[0], &native );
-	g_audioStateFoot.pSubmixVoice->SetEffectParameters( 0, &native, sizeof( native ) );
-	
-	//
-	// Initialize X3DAudio
-	//  Speaker geometry configuration on the final mix, specifies assignment of channels
-	//  to speaker positions, defined as per WAVEFORMATEXTENSIBLE.dwChannelMask
-	//
-	//  SpeedOfSound - speed of sound in user-defined world units/second, used
-	//  only for doppler calculations, it must be >= FLT_MIN
-	//
-	const float SPEEDOFSOUND = 200;//X3DAUDIO_SPEED_OF_SOUND;
-
-	X3DAudioInitialize( dwChannelMask, SPEEDOFSOUND, g_audioStateFoot.x3DInstance );
-
-
-	g_audioStateFoot.vListenerPos = X3DAUDIO_VECTOR( listenerPos.m_x, 0, listenerPos.m_z );
-	//g_audioState.vListenerPos = X3DAUDIO_VECTOR( 0, 0,0 );
-	g_audioStateFoot.vEmitterPos = X3DAUDIO_VECTOR( emitterPos.m_x, 0, emitterPos.m_z );
-
-
-	SceneNode* _CameraSceneNode = CameraManager::Instance()->getActiveCamera()->getCamSceneNode();
-	Vector3 color = Vector3(1.0f, 0.0f, 0.0f);
-	
-
-
-	g_audioStateFoot.fListenerAngle = 0;
-	g_audioStateFoot.fUseListenerCone = TRUE;
-	g_audioStateFoot.fUseInnerRadius = TRUE;
-	g_audioStateFoot.fUseRedirectToLFE = ((dwChannelMask & SPEAKER_LOW_FREQUENCY) != 0);
-	g_audioStateFoot.fUseEmitterCone = TRUE;
-	//
-	// Setup 3D audio structs
-	//
-	g_audioStateFoot.listener.Position = g_audioStateFoot.vListenerPos;
-	g_audioStateFoot.listener.OrientFront = X3DAUDIO_VECTOR( 0, 0, 1 );
-	g_audioStateFoot.listener.OrientTop = X3DAUDIO_VECTOR( 0, 1, 0 );
-	g_audioStateFoot.listener.pCone = (X3DAUDIO_CONE*)&Listener_DirectionalCone;
-
-	g_audioStateFoot.emitter.pCone = &g_audioStateFoot.emitterCone;
-	g_audioStateFoot.emitter.pCone->InnerAngle = 0.0f;
-	// Setting the inner cone angles to X3DAUDIO_2PI and
-	// outer cone other than 0 causes
-	// the emitter to act like a point emitter using the
-	// INNER cone settings only.
-	g_audioStateFoot.emitter.pCone->OuterAngle = 0.0f;
-	// Setting the outer cone angles to zero causes
-	// the emitter to act like a point emitter using the
-	// OUTER cone settings only.
-	g_audioStateFoot.emitter.pCone->InnerVolume = 0.0f;
-	g_audioStateFoot.emitter.pCone->OuterVolume = 1.0f;
-	g_audioStateFoot.emitter.pCone->InnerLPF = 0.0f;
-	g_audioStateFoot.emitter.pCone->OuterLPF = 1.0f;
-	g_audioStateFoot.emitter.pCone->InnerReverb = 0.0f;
-	g_audioStateFoot.emitter.pCone->OuterReverb = 1.0f;
-
-	g_audioStateFoot.emitter.Position = g_audioStateFoot.vEmitterPos;
-	g_audioStateFoot.emitter.OrientFront = X3DAUDIO_VECTOR( 0, 0, 1 );
-	g_audioStateFoot.emitter.OrientTop = X3DAUDIO_VECTOR( 0, 1, 0 );
-	g_audioStateFoot.emitter.ChannelCount = INPUTCHANNELS;
-	g_audioStateFoot.emitter.ChannelRadius = 1.0f;
-	g_audioStateFoot.emitter.pChannelAzimuths = g_audioStateFoot.emitterAzimuths;
-
-	// Use of Inner radius allows for smoother transitions as
-	// a sound travels directly through, above, or below the listener.
-	// It also may be used to give elevation cues.
-	g_audioStateFoot.emitter.InnerRadius = 2.0f;
-	g_audioStateFoot.emitter.InnerRadiusAngle = X3DAUDIO_PI/4.0f;;
-
-	g_audioStateFoot.emitter.pVolumeCurve = (X3DAUDIO_DISTANCE_CURVE*)&X3DAudioDefault_LinearCurve;
-	g_audioStateFoot.emitter.pLFECurve    = (X3DAUDIO_DISTANCE_CURVE*)&Emitter_LFE_Curve;
-	g_audioStateFoot.emitter.pLPFDirectCurve = NULL; // use default curve
-	g_audioStateFoot.emitter.pLPFReverbCurve = NULL; // use default curve
-	g_audioStateFoot.emitter.pReverbCurve    = (X3DAUDIO_DISTANCE_CURVE*)&Emitter_Reverb_Curve;
-	g_audioStateFoot.emitter.CurveDistanceScaler = 21.0f; //Change this for Distance
-	g_audioStateFoot.emitter.DopplerScaler = 1.0f;
-
-	g_audioStateFoot.dspSettings.SrcChannelCount = INPUTCHANNELS;
-	g_audioStateFoot.dspSettings.DstChannelCount = g_audioStateFoot.nChannels;
-	g_audioStateFoot.dspSettings.pMatrixCoefficients = g_audioStateFoot.matrixCoefficients;
-
-	//
-	// Done
-	//
-	g_audioStateFoot.bInitialized = true;
-
-	return S_OK;
-}
-
 
 
 HRESULT SoundManager::PrepareAudio(SoundManager* soundManager,const char* filename,int loopCount,bool echo)
