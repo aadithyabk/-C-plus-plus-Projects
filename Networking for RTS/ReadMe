@@ -6,7 +6,9 @@ OnExit() which is again overridden by different states.
 Networking:
 The server maintains a ghostID for each character that is unique across all clients. When a character is spawned, a networkView for that
 character is created and is assigned a ghostID. When state/attribute of a character changes in one client, I send events to all the 
-clients indicating the ghostID and the parameter that needs to be changed in their instance of the game.
+clients indicating the ghostID and the parameter that needs to be changed in their instance of the game. The engine already supported
+establishing the TCP connection between two clients. So my responsibility is to create the events, pack the data into a packet
+when an event occurs and again unpacking it when its received.
 
 The networking is stuctured in such a way that the first client to start the game is always the master. ALl the clients first send
 crucial events such "hitting another character" to the master. Master checks if the "hit" is actually possible by checking the position 
