@@ -169,8 +169,6 @@ void boggle(struct Node **Letters, std::vector<std::string> &Output, int size, t
 	}
 }
 
-
-
 void fillLetters(struct Node** Letters, int i, char data, int size)
 {
 	int  res, rowNum;
