@@ -1,3 +1,13 @@
+#include<time.h>
+#include<stdio.h>
+#include<string>
+#include<stdlib.h>
+#include<conio.h>
+#include<cstdlib>
+#include<iostream>
+#include<vector>
+#include"Boggle.h"
+
 trie_node *getNewNode()
 {
 	//Creates new node for the trie
@@ -133,6 +143,9 @@ void findStringUsingTrie(struct Node **Letters, struct Node* node, std::vector<s
 
 		}
 	}
+	
+	//Consider the neighbours of each letter in the table
+	
 	if (node->left != NULL)
 		findStringUsingTrie(Letters, node->left, output, count, trie, temp);
 
@@ -162,7 +175,6 @@ void findStringUsingTrie(struct Node **Letters, struct Node* node, std::vector<s
 
 void boggle(struct Node **Letters, std::vector<std::string> &Output, int size, trie_t *trie, std::string temp,int *count)
 {
-	
 	for (int i = 0; i < size*size; i++)
 	{
 		findStringUsingTrie(Letters, Letters[i],Output,  count,  trie, temp);
@@ -178,6 +190,8 @@ void fillLetters(struct Node** Letters, int i, char data, int size)
 	Letters[i]->Top = (i - size < 0) ? NULL : Letters[i - size];
 	Letters[i]->Bottom = (i + size >= size * size) ? NULL : Letters[i + size];
 
+	//Neighbours of the a particular in the table 
+	
 	//RightLower
 	res = ((i + size + 1) / size);
 	rowNum = i / size;
@@ -209,4 +223,47 @@ void fillLetters(struct Node** Letters, int i, char data, int size)
 	else
 		Letters[i]->LeftUpper = NULL;
 
+}
+
+int main()
+{
+
+	printf("Enter the size of square matrix: ");
+	scanf_s("%d", &size);
+	
+	struct Node** Letters = new Node*[size*size];
+
+	for (int j = 0; j < size * size; j++)
+	{
+		Letters[j] = new Node;
+		Letters[j]->visited = 0;
+	}
+	for (int j = 0; j < size * size; j++)
+	{
+		char data;
+		printf("Enter data: ");
+		std::cin >> data;
+		
+		//fill the letters into the table
+		fillLetters(Letters, j, data, size);
+	}
+
+	trie_t trie;
+	trie.root = getNewNode();
+	trie.count = 0;
+
+	char dictionary[][65] = { "bred", "yore", "abed", "byre", "orby","robed","broad","byroad","robe","bored",
+		"derby","bade","aero", "read", "orbed", "verb", "aery", "bead", "bread", "very", "road","phne",
+		"rncs","trench","chant","panel","vet","eye","path","let","ten","robbed","watter","trek","tawt","att"
+		,"bud","cert","bore","dewax","drew","wed","duet","oread","ewts","kets","awe","awed","bum","stawed",
+		"tawts","taw","swatter","rewax","duett","crews","watt","trets","ked","duet","stewbum","buke","redub","cred","recs","ewt"};
+	clock_t tStart = clock();
+	for (int j = 0; j < 65;j++)
+		insertLetter(&trie, dictionary[j]);
+
+	boggle(Letters, Output, size, &trie, temp,&count);
+	PrintOutput(Output,count);
+	printf("\nTime taken: %.2fs\n", (double)(clock() - tStart) / CLOCKS_PER_SEC);
+	_getch();
+	return 0;
 }
