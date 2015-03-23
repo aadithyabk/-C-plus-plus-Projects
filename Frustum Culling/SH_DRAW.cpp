@@ -48,113 +48,112 @@ void SingleHandler_DRAW::do_GATHER_DRAWCALLS(Events::Event *pEvt)
 		//Loop through all the meshes
         for (int iInst = 0; iInst < pMeshCaller->m_instances.m_size; ++iInst)
         {
-            MeshInstance *pInst = pMeshCaller->m_instances[iInst].getObject<MeshInstance>();
+                MeshInstance *pInst = pMeshCaller->m_instances[iInst].getObject<MeshInstance>();
 			
 			
 
-			xmax= pMeshCaller->m_hPositionBufferCPU.getObject<PositionBufferCPU>()->xmax;
-			xmin= pMeshCaller->m_hPositionBufferCPU.getObject<PositionBufferCPU>()->xmin;
-			ymax= pMeshCaller->m_hPositionBufferCPU.getObject<PositionBufferCPU>()->ymax;
-			ymin= pMeshCaller->m_hPositionBufferCPU.getObject<PositionBufferCPU>()->ymin;
-			zmax= pMeshCaller->m_hPositionBufferCPU.getObject<PositionBufferCPU>()->zmax;
-			zmin= pMeshCaller->m_hPositionBufferCPU.getObject<PositionBufferCPU>()->zmin;
+		xmax= pMeshCaller->m_hPositionBufferCPU.getObject<PositionBufferCPU>()->xmax;
+		xmin= pMeshCaller->m_hPositionBufferCPU.getObject<PositionBufferCPU>()->xmin;
+		ymax= pMeshCaller->m_hPositionBufferCPU.getObject<PositionBufferCPU>()->ymax;
+		ymin= pMeshCaller->m_hPositionBufferCPU.getObject<PositionBufferCPU>()->ymin;
+		zmax= pMeshCaller->m_hPositionBufferCPU.getObject<PositionBufferCPU>()->zmax;
+		zmin= pMeshCaller->m_hPositionBufferCPU.getObject<PositionBufferCPU>()->zmin;
 			
-			ipt = 0;
-			Handle hParent1SN = pInst->getFirstParentByType<SceneNode>();
-			SceneNode *myScene = hParent1SN.getObject<SceneNode>();	
+		ipt = 0;
+		Handle hParent1SN = pInst->getFirstParentByType<SceneNode>();
+		SceneNode *myScene = hParent1SN.getObject<SceneNode>();	
 
-			//Get the 8 points for the bounding box
-			pos0 = Vector3(xmin,ymin,zmin);
-			pos1 = Vector3(xmax,ymin,zmin);
-			pos3 = Vector3(xmax,ymax,zmin);
-			pos2 = Vector3(xmin,ymax,zmin);
-			pos4 = Vector3(xmin,ymin,zmax);
-			pos5 = Vector3(xmax,ymin,zmax);
-			pos6 = Vector3(xmax,ymax,zmax);
-			pos7 = Vector3(xmin,ymax,zmax);
+		//Get the 8 points for the bounding box
+		pos0 = Vector3(xmin,ymin,zmin);
+		pos1 = Vector3(xmax,ymin,zmin);
+		pos3 = Vector3(xmax,ymax,zmin);
+		pos2 = Vector3(xmin,ymax,zmin);
+		pos4 = Vector3(xmin,ymin,zmax);
+		pos5 = Vector3(xmax,ymin,zmax);
+		pos6 = Vector3(xmax,ymax,zmax);
+		pos7 = Vector3(xmin,ymax,zmax);
 
-			Matrix4x4 base = myScene->m_worldTransform;
-			Vector3 pos_res0 = pos_res0 = base * pos0;
-			Vector3 pos_res1 = pos_res1 = base * pos1;
-			Vector3 pos_res2 = pos_res2 = base * pos2;
-			Vector3 pos_res3 = pos_res3 = base * pos3;
-			Vector3 pos_res4 = pos_res4 = base * pos4;
-			Vector3 pos_res5 = pos_res5 = base * pos5;
-			Vector3 pos_res6 = pos_res6 = base * pos6;
-			Vector3 pos_res7 = pos_res7 = base * pos7;
+		Matrix4x4 base = myScene->m_worldTransform;
+		Vector3 pos_res0 = pos_res0 = base * pos0;
+		Vector3 pos_res1 = pos_res1 = base * pos1;
+		Vector3 pos_res2 = pos_res2 = base * pos2;
+		Vector3 pos_res3 = pos_res3 = base * pos3;
+		Vector3 pos_res4 = pos_res4 = base * pos4;
+		Vector3 pos_res5 = pos_res5 = base * pos5;
+		Vector3 pos_res6 = pos_res6 = base * pos6;
+		Vector3 pos_res7 = pos_res7 = base * pos7;
 
 				
 		    
-			CameraSceneNode *pcam = CameraManager::Instance()->getActiveCamera()->getCamSceneNode();
-			nearTopLeft = pcam->m_nearTopLeft;
-			nearTopRight = pcam->m_nearTopRight;
-			nearLowerLeft = pcam->m_nearLowerLeft;
-			nearLowerRight = pcam->m_nearLowerRight;
-			farTopLeft = pcam->m_farTopLeft;
-			farTopRight = pcam->m_farTopRight;
-			farLowerLeft = pcam->m_farLowerLeft;
-			farLowerRight = pcam->m_farLowerRight;
+		CameraSceneNode *pcam = CameraManager::Instance()->getActiveCamera()->getCamSceneNode();
+		nearTopLeft = pcam->m_nearTopLeft;
+		nearTopRight = pcam->m_nearTopRight;
+		nearLowerLeft = pcam->m_nearLowerLeft;
+		nearLowerRight = pcam->m_nearLowerRight;
+		farTopLeft = pcam->m_farTopLeft;
+		farTopRight = pcam->m_farTopRight;
+		farLowerLeft = pcam->m_farLowerLeft;
+		farLowerRight = pcam->m_farLowerRight;
 					
-			//Obtain Planes
+		//Obtain Planes
 			
-			//Left plane
-			plane leftPlane = plane();
-			leftPlane.CalculateEquationOfPlane(nearTopLeft, nearLowerLeft, farTopLeft);
+		//Left plane
+		plane leftPlane = plane();
+		leftPlane.CalculateEquationOfPlane(nearTopLeft, nearLowerLeft, farTopLeft);
 	
-			//Near plane
-			plane nearPlane = plane();
-			nearPlane.CalculateEquationOfPlane( nearLowerRight , nearLowerLeft, nearTopRight);
+		//Near plane
+		plane nearPlane = plane();
+		nearPlane.CalculateEquationOfPlane( nearLowerRight , nearLowerLeft, nearTopRight);
 
-			//Right plane
-			plane rightPlane = plane();
-			rightPlane.CalculateEquationOfPlane(farLowerRight, nearLowerRight, farTopRight);
+		//Right plane
+		plane rightPlane = plane();
+		rightPlane.CalculateEquationOfPlane(farLowerRight, nearLowerRight, farTopRight);
 	
-			//Bottom plane
-			plane bottomPlane = plane();
-			bottomPlane.CalculateEquationOfPlane(nearLowerLeft, nearLowerRight, farLowerLeft);
+		//Bottom plane
+		plane bottomPlane = plane();
+		bottomPlane.CalculateEquationOfPlane(nearLowerLeft, nearLowerRight, farLowerLeft);
 
-			//Far plane
-			plane farPlane = plane();
-			farPlane.CalculateEquationOfPlane(farTopLeft, farLowerLeft,  farTopRight);
+		//Far plane
+		plane farPlane = plane();
+		farPlane.CalculateEquationOfPlane(farTopLeft, farLowerLeft,  farTopRight);
 
-			//Top plane
-			plane topPlane = plane();
-			topPlane.CalculateEquationOfPlane(nearTopRight, nearTopLeft, farTopRight);
+		//Top plane
+		plane topPlane = plane();
+		topPlane.CalculateEquationOfPlane(nearTopRight, nearTopLeft, farTopRight);
 			
 			
-			//Check if any point of the bounding box is outside the frustum
+		//Check if any point of the bounding box is outside the frustum
 			
-			bool result1 =  point.DetermineInsideOrOutside(pos_res0, pos_res1, pos_res2, pos_res3, pos_res4, pos_res5, pos_res7, pos_res7, nearLowerLeft, leftPlane );
-			bool result2 =  point.DetermineInsideOrOutside(pos_res0, pos_res1, pos_res2, pos_res3, pos_res4, pos_res5, pos_res7, pos_res7, nearLowerRight, rightPlane );	
-			bool result3 =  point.DetermineInsideOrOutside(pos_res0, pos_res1, pos_res2, pos_res3, pos_res4, pos_res5, pos_res7, pos_res7, nearTopLeft, topPlane );
-			bool result4 =  point.DetermineInsideOrOutside(pos_res0, pos_res1, pos_res2, pos_res3, pos_res4, pos_res5, pos_res7, pos_res7, nearLowerRight, bottomPlane );
-			bool result5 =  point.DetermineInsideOrOutside(pos_res0, pos_res1, pos_res2, pos_res3, pos_res4, pos_res5, pos_res7, pos_res7, nearTopLeft, nearPlane );
-			bool result6 =  point.DetermineInsideOrOutside(pos_res0, pos_res1, pos_res2, pos_res3, pos_res4, pos_res5, pos_res7, pos_res7, farTopLeft, farPlane );
+		bool result1 =  point.DetermineInsideOrOutside(pos_res0, pos_res1, pos_res2, pos_res3, pos_res4, pos_res5, pos_res7, pos_res7, nearLowerLeft, leftPlane );
+		bool result2 =  point.DetermineInsideOrOutside(pos_res0, pos_res1, pos_res2, pos_res3, pos_res4, pos_res5, pos_res7, pos_res7, nearLowerRight, rightPlane );	
+		bool result3 =  point.DetermineInsideOrOutside(pos_res0, pos_res1, pos_res2, pos_res3, pos_res4, pos_res5, pos_res7, pos_res7, nearTopLeft, topPlane );
+		bool result4 =  point.DetermineInsideOrOutside(pos_res0, pos_res1, pos_res2, pos_res3, pos_res4, pos_res5, pos_res7, pos_res7, nearLowerRight, bottomPlane );
+		bool result5 =  point.DetermineInsideOrOutside(pos_res0, pos_res1, pos_res2, pos_res3, pos_res4, pos_res5, pos_res7, pos_res7, nearTopLeft, nearPlane );
+		bool result6 =  point.DetermineInsideOrOutside(pos_res0, pos_res1, pos_res2, pos_res3, pos_res4, pos_res5, pos_res7, pos_res7, farTopLeft, farPlane );
 			
 
-			if(!result1 && !result2 && !result3 && !result4 && !result5 && !result6)
-            {
-				//Present Inside the frustum
+		if(!result1 && !result2 && !result3 && !result4 && !result5 && !result6)
+            	{
+			//Present Inside the frustum
 					
-				pInst->m_culledOut = false;
-				++pMeshCaller->m_numVisibleInstances;
-				drawLine(pMeshCaller, myScene,pos_res0, pos_res1, pos_res2, pos_res3, pos_res4, pos_res5, pos_res6, pos_res7);		//Draw bounding box for this mesh
-				ipt = 0;
-            }
-           else
-            {
-				//Needs to be culled
-                 pInst->m_culledOut = true;
-            }
+			pInst->m_culledOut = false;
+			++pMeshCaller->m_numVisibleInstances;
+			drawLine(pMeshCaller, myScene,pos_res0, pos_res1, pos_res2, pos_res3, pos_res4, pos_res5, pos_res6, pos_res7);		//Draw bounding box for this mesh
+			ipt = 0;
+        	}
+           	else
+        	{
+			//Needs to be culled
+        		  pInst->m_culledOut = true;
+        	}
 			
         }
     }
     
-
 	DrawList *pDrawList = pDrawEvent ? DrawList::Instance() : DrawList::ZOnlyInstance();
 	
-    //dbg
-    //SceneNode *pRoot = RootSceneNode::Instance();
+	 //dbg
+	 //SceneNode *pRoot = RootSceneNode::Instance();
 
 	// index buffer
 	Handle hIBuf = pMeshCaller->m_hIndexBufferGPU;
