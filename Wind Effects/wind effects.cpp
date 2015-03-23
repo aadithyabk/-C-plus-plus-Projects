@@ -54,7 +54,7 @@ void RootSceneNode::do_GATHER_DRAWCALLS(Events::Event *pEvt)
 	Events::Event_GATHER_DRAWCALLS *pDrawEvent = zOnly ? NULL : (Events::Event_GATHER_DRAWCALLS *)(pEvt);
 	Events::Event_GATHER_DRAWCALLS_Z_ONLY *pZOnlyDrawEvent = zOnly ? (Events::Event_GATHER_DRAWCALLS_Z_ONLY *)(pEvt) : NULL;
 
-	// set some effect constants here that will be constant per frame
+	
 
 	bool setGlobalValues = true;
 	if (!zOnly && pDrawEvent->m_drawOrder != EffectDrawOrder::First)
@@ -71,7 +71,8 @@ void RootSceneNode::do_GATHER_DRAWCALLS(Events::Event *pEvt)
 		p->m_data.gGameTimes[1] = pDrawEvent ? pDrawEvent->m_frameTime : 0;
 		
 
-		
+		//This is the shader action for D3D9
+		// set some effect constants here that will be constant per frame
 		#if APIABSTRACTION_D3D9
 
 		/*Key Events for toggle of TextChoord and WindIntensity*/
@@ -83,21 +84,6 @@ void RootSceneNode::do_GATHER_DRAWCALLS(Events::Event *pEvt)
 				m_toggle = 0;
 		}
 		
-
-		if(GetAsyncKeyState('H') & 0x8000)
-		{
-			if(m_intensity <=1)
-			m_intensity+=0.05;
-		}
-		
-			if(GetAsyncKeyState('L') & 0x8000)
-		{
-			if(m_intensity >=0)
-			m_intensity-=0.05;
-		}
-
-
-
 
 		//SETTING WIND VALUES & SOURCES
 		Vector3 _WindEffect = Vector3(0.0f, 0.0f, 0.0f);
@@ -149,7 +135,7 @@ void RootSceneNode::do_GATHER_DRAWCALLS(Events::Event *pEvt)
 			p->m_data.windSource1[2] = 0.0f;
 			p->m_data.windSource1[3] = 0.0f;
 		}
-
+		//The third wind source is the camera itself.
 		p->m_data.windSource2[0] = _CameraPosition.m_x;
 		p->m_data.windSource2[1] = _CameraPosition.m_y;
 		p->m_data.windSource2[2] = _CameraPosition.m_z;
@@ -159,7 +145,7 @@ void RootSceneNode::do_GATHER_DRAWCALLS(Events::Event *pEvt)
 		#endif
 	}
 
-	// set some effect constants here that will be constant per object group
+	
 	// NOTE at this point we have only one object group so we set it on top level per frame
 
 	if (setGlobalValues)
@@ -178,7 +164,9 @@ void RootSceneNode::do_GATHER_DRAWCALLS(Events::Event *pEvt)
 		psvPerObjectGroup->m_data.gDoMotionBlur = 0;
 		psvPerObjectGroup->m_data.gEyePosW = pDrawEvent ? pDrawEvent->m_eyePos : pZOnlyDrawEvent->m_eyePos;
 
-
+		
+		//The shader actions for OpenGL is different.
+		// set some effect constants here that will be constant per object group
 		#if	APIABSTRACTION_OGL 
 		/*Key Events for toggle of TextChoord and WindIntensity*/
 		if(GetAsyncKeyState('T') & 0x8000)
