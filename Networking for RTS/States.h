@@ -1,3 +1,6 @@
+//This is the base class for different states of each character.
+//Each character overrides the three virtual functions to do things that suit its behaviour
+
 #ifndef _STATES_
 #define _STATES_
 
