@@ -145,7 +145,6 @@ void SoundManager::GenerateAudioPathName(PE::GameContext &context, const char *f
 	}
 	
 	StringOps::concat(out_path, filename, out_path, len);
-
 }
 
 HRESULT SoundManager::FindChunk(HANDLE hFile, DWORD fourcc, DWORD & dwChunkSize, DWORD & dwChunkDataPosition)
