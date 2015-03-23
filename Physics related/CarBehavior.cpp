@@ -1,3 +1,11 @@
+//The way I tried to work out the math for this project is:
+//Gravity continuously acts on the wheels. if the wheels collide with the ground, an opposite force is added and thus negating gravity.
+//When gravity collides with the ramp, The tyres are pushed outwards along the normal of the ramp. Then the body's forward vector is rotated
+//to match the vector between front tyre to rear tyre and this makes it parallel to the ramp.
+
+//The four tyres have four scene nodes which are children of the body's scene node. Movement of car along x and z is handled by the body and movement along y is handled by the tyres.
+
+
 #include "CarBehavior.h"
 #include "PrimeEngine/PrimeEngineIncludes.h"
 #include "ClientGameObjectManagerAddon.h"
@@ -106,7 +114,7 @@ namespace PE
 				
 				////-ve turn down
 				////+VE turn up 
-				
+				//Rotate the body of the car.
 				pSN_body->m_base.turnUp(_Angle);
 			
 				
