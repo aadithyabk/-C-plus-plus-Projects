@@ -20,9 +20,10 @@ void PhysicsManager::do_UPDATE(Events::Event *pEvt)
 			Vector3 centerTocenter = (jSN1->m_worldTransform.getPos()) - (jSN2->m_worldTransform.getPos());  
 			float length = centerTocenter.length(); //Distance between the centres of sphere
 			
-		
+				//To make sure that collision is not checked with two physics components of the same player
 				if((pC1->m_playerNum == 1 && pC2->m_playerNum == 2 ) || (pC1->m_playerNum == 2 && pC2->m_playerNum == 1))
 				{
+					//To avoid collision between joints that are not required. For example: head and spine.
 					if(!(((jSN1->m_jointNum ==3 && jSN2->m_jointNum == 4) || (jSN1->m_jointNum ==4 && jSN2->m_jointNum == 3))))
 					{
 						if(!(((jSN1->m_jointNum ==5 && jSN2->m_jointNum == 1) || (jSN1->m_jointNum ==1 && jSN2->m_jointNum == 5))))
