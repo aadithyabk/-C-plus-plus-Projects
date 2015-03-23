@@ -45,7 +45,7 @@ void SingleHandler_DRAW::do_GATHER_DRAWCALLS(Events::Event *pEvt)
 	 {
         pMeshCaller->m_numVisibleInstances = 0;
         
-		//Loop through all the meshes
+	//Loop through all the meshes
         for (int iInst = 0; iInst < pMeshCaller->m_instances.m_size; ++iInst)
         {
                 MeshInstance *pInst = pMeshCaller->m_instances[iInst].getObject<MeshInstance>();
