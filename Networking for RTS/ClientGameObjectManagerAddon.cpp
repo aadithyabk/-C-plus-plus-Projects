@@ -1,3 +1,6 @@
+//This file contains the event handlers for events that will be sent across from client to another
+
+
 #include "ClientGameObjectManagerAddon.h"
 
 #include "PrimeEngine/PrimeEngineIncludes.h"
