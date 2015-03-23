@@ -1,3 +1,6 @@
+//do_PRE_UPDATE has been configured to be called every frame but before the do_UPDATE(). 
+//do_POST_UPDATE has been configured to be called every frame after do_UPDATE().
+
 #define NOMINMAX
 
 #include "PhysicsManager.h"
@@ -46,7 +49,7 @@ void PhysicsManager::Construct(PE::GameContext &context, PE::MemoryArena arena)
 void PhysicsManager::addDefaultComponents()
 {
 	Component::addDefaultComponents();
-
+	//Registers the events with the respective event handlers
 	PE_REGISTER_EVENT_HANDLER(Events::Event_PHYSICS_START, PhysicsManager::do_PRE_UPDATE);
 	PE_REGISTER_EVENT_HANDLER(Events::Event_UPDATE, PhysicsManager::do_UPDATE);
 	PE_REGISTER_EVENT_HANDLER(Events::Event_PHYSICS_END, PhysicsManager::do_POST_UPDATE);
@@ -68,6 +71,8 @@ void PhysicsManager::do_PRE_UPDATE(Events::Event *pEvt)
 			//_CurrentPos.m_y -= 0.3f;
 			SceneNode *_SN = m_SceneNodes[i].getObject<SceneNode>();
 			
+			//Gravity added on the front tyres is more assuming the engine is in the front of the car. 
+			//This would be helpful when the car jumps over the ramp. It would then have spherical sort of path in the air
 			if(strcmp(m_SceneNodes[i].getDbgName(),"SCENE_NODE_FrontLeft_Tyre") == 0 || strcmp(m_SceneNodes[i].getDbgName(),"Car_SCENE_NODE_FRT") == 0)
 				m_SceneNodes[i].getObject<SceneNode>()->m_Physics->AddForce(Vector3(0,-0.3 * factor,0), m_SceneNodes[i]);
 			else
@@ -103,6 +108,7 @@ void PhysicsManager::do_UPDATE(Events::Event *pEvt)
 			  
 			   for(int j=0;j<m_SceneNodes.m_size;j++)
 			   {
+			   	   //Do not check collision with itself
 				   if (i == j) continue;
 					SceneNode *_SN2 = m_SceneNodes[j].getObject<SceneNode>();
 
