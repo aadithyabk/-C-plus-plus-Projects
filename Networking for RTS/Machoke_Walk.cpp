@@ -1,3 +1,7 @@
+//This class inherits from states class and overrides the functions.
+
+//Note: I'm not in charge of the AI for this project. It has been written by my teammate for this project.
+
 #include "Machoke_Walk.h"
 #include "PrimeEngine/APIAbstraction/APIAbstractionDefines.h"
 #include "PrimeEngine/PrimeEngineIncludes.h"
@@ -29,7 +33,7 @@ namespace CharacterControl
 		}
 		void Machoke_Walk::OnEnter()
 		{
-			PEINFO("Entering Walk");
+			//on entering this state, begin walking aniatmion
 			PE::Handle h("MachokeAnimSM_Event_WALK", sizeof(MachokeAnimSM_Event_WALK));
 			Events::MachokeAnimSM_Event_WALK *pOutEvt = new(h) MachokeAnimSM_Event_WALK();
 			m_parentPokemon->getFirstComponent<PE::Components::SceneNode>()->handleEvent(pOutEvt);
@@ -41,7 +45,7 @@ namespace CharacterControl
 
 		void Machoke_Walk::OnExit()
 		{
-
+			//nothing to be done on OnExit
 		}
 
 		bool Machoke_Walk::Approximate(float a, float b)
@@ -55,28 +59,17 @@ namespace CharacterControl
 
 		void Machoke_Walk::Update(PE::Events::Event *pEvt)
 		{
-			
-			////TODO - Get position from mouse click
+			//when the character is in walk state, it will be called every frame from the do_Update() of Pokemon class
+			//As long as it is in walk state, walk using AI to that particular destination.
 			if (m_parentPokemon->m_networkView->IsOwner)
 			{
 
-				PEINFO("Inside Walk's Update");
 				SceneNode *pSN = m_parentPokemon->getFirstComponent<SceneNode>();
 				Vector3 currentPos = pSN->m_base.getPos();
 				currentPos.m_x += 0.0001;
 				pSN->m_base.setPos(currentPos);
 
-			
-				PEINFO("Entering Walk");
-				Vector3 tankPos;
 				CharacterControl::Components::ClientGameObjectManagerAddon *pGameObjectManagerAddon = (CharacterControl::Components::ClientGameObjectManagerAddon *)(m_pContext->get<CharacterControl::CharacterControlContext>()->getGameObjectManagerAddon());
-							
-			
-
-				pGameObjectManagerAddon->getTank(&tankPos);
-				//tankPos = Vector3(10,0,10);
-				
-
 				PE::Components::FloorVol * pFloor = m_parentPokemon->m_floorInstancePokemon;;
 				int startID, endID;
 				//endID = pFloor->CalculateIDs(tankPos);
@@ -149,6 +142,7 @@ namespace CharacterControl
 				}
 				else
 				{
+					//On reaching the destination, change state to idle.
 					m_pContext->getGPUScreen()->AcquireRenderContextOwnership(m_pContext->m_gameThreadThreadOwnershipMask);
 					DebugRenderer::Instance()->createTextMesh("_", true, false, false, false, 0, 
 							Vector3(0.5f, 0.5f, 0), 5.0f, m_pContext->m_gameThreadThreadOwnershipMask);
@@ -161,6 +155,10 @@ namespace CharacterControl
 					pNetworkManager->getNetworkContext().getEventManager()->scheduleEvent(&pEvt, m_pContext->getGameObjectManager(), true, false);
 			
 				}
+				//Continuously update this character's positon on all other clients.
+				//Event_UpdateAttributes tells the other clients to update the position of this ghost 
+				//in their game instance
+				
 				CharacterControl::Events::Event_UpdateAttribute pEvt(*m_pContext);
 				pEvt.changeThisGhost = m_parentPokemon->m_networkView->m_ghostID;
 				pEvt.attributeToBeChanged = POSITION;
