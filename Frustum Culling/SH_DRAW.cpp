@@ -1,3 +1,5 @@
+//THis is the drawCalls function already present in the engine to render static meshes.
+
 
 PE_IMPLEMENT_SINGLETON_CLASS1(SingleHandler_DRAW, Component);
 
