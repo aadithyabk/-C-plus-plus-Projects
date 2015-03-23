@@ -19,9 +19,11 @@ static float Debug_Fly_Speed = 6.0f;
 float new_time1= 0.0f;
 int inAir = 0;
 int turnCount = 0;
-namespace PE{
+namespace PE
+{
 
-	namespace Components{
+	namespace Components
+	{
 
 		PE_IMPLEMENT_CLASS1(CarBehavior, Component);
 
@@ -81,136 +83,34 @@ namespace PE{
 			m_SceneNodes[3] = pSN_FRT;
 			m_SceneNodes[4] = pSN_RRT;
 
-
-			//Calculate force resultant on all four tyres and apply to the center of the body
-			for( int i =0; i < pSN_FLT->m_Physics->m_ForceList.m_size; i++)
-			{
-				forceResultant.m_x += pSN_FLT->m_Physics->m_ForceList[i].m_x;
-				forceResultant.m_y += pSN_FLT->m_Physics->m_ForceList[i].m_y;
-				forceResultant.m_z += pSN_FLT->m_Physics->m_ForceList[i].m_z;
-
-			}
-			
-			for( int i =0; i < pSN_FRT->m_Physics->m_ForceList.m_size; i++)
-			{
-			forceResultant.m_x += pSN_FRT->m_Physics->m_ForceList[i].m_x;
-			forceResultant.m_y += pSN_FRT->m_Physics->m_ForceList[i].m_y;
-			forceResultant.m_z += pSN_FRT->m_Physics->m_ForceList[i].m_z;
-
-			}
-
-			for( int i =0; i < pSN_RLT->m_Physics->m_ForceList.m_size; i++)
-			{
-			forceResultant.m_x += pSN_RLT->m_Physics->m_ForceList[i].m_x;
-			forceResultant.m_y += pSN_RLT->m_Physics->m_ForceList[i].m_y;
-			forceResultant.m_z += pSN_RLT->m_Physics->m_ForceList[i].m_z;
-
-			}
-			for( int i =0; i < pSN_RRT->m_Physics->m_ForceList.m_size; i++)
-			{
-			forceResultant.m_x += pSN_RRT->m_Physics->m_ForceList[i].m_x;
-			forceResultant.m_y += pSN_RRT->m_Physics->m_ForceList[i].m_y;
-			forceResultant.m_z += pSN_RRT->m_Physics->m_ForceList[i].m_z;
-
-			}
-
 			for(int i = 0; i < 5; i++)
 			{
-				m_SceneNodes[i]->m_Physics->AddForces(h[i]); //Add forces to the body
+				//Calculate the new position of each tyre depending on the forces acting on it
+				m_SceneNodes[i]->m_Physics->AddForces(h[i]); 
 			}
-
 			
-
-			float _Diff = pSN_FLT->m_Physics->NewPosition.m_y - pSN_RLT->m_Physics->NewPosition.m_y;
-			
-
-			//float finalY = pSN_RLT->m_Physics->NewPosition.m_y + (_Diff);
-			Vector3 _Initial = pSN_body->m_base.getPos();
-			float finalY = pSN_RLT->m_Physics->NewPosition.m_y + (_Diff)/2;
-
-			forceResultant += _Initial;
-
-
 			Vector3 _AngleAlongRamp = pSN_FLT->m_Physics->NewPosition - pSN_RLT->m_Physics->NewPosition;
 
+			if(pSN_FLT->m_Physics->m_state == Physics::ONRAMP)
+			{			
+				Vector3 forward  = pSN_body->m_worldTransform.getN();
+				forward.m_x = 0;
+				Vector3 direction = _AngleAlongRamp;/
+				direction.m_x = 0;
 
-			
-					else 
-							inAir=0;
-					new_time1 = (clock()- previousTime1)/10000;
-					//pSN_FLT->m_base.setPos(pSN_FLT->m_base.getPos() + forceResultant);
-					//Vector3 finalPos = pSN_body->m_base.getPos() + new_time1 * (forceResultant - pSN_body->m_base.getPos());
-					static float yPrev = 0;
-					static float yNew = 0;
-					yPrev = yNew;
-					//PEINFO("Force Resultant is %f %f %f",forceResultant.m_x, forceResultant.m_y, forceResultant.m_z);
-					yNew = forceResultant.m_y;
-						if(pSN_body->m_base.getPos().m_y<-7)
-						{
-							pSN_body->m_base.setPos(Vector3 (-10 , 0 , 70));
-							m_velocity = 0.0f;
-						}
-						else
-					pSN_body->m_base.setPos(forceResultant);
+				forward.m_x = 0;
+				forward.normalize();
 
-					Vector3 N = pSN_body->m_base.getN();
-					//pSN_body->m_base.turnUp(-0.01);
-
-
-					if(pSN_FLT->m_Physics->m_state == Physics::ONRAMP)
-					{
-
-						if(turnCount <10)
-						{
-							pSN_body->m_base.turnUp(3.145/40);
-
-							turnCount ++;
-
-						}			
-						Vector3 forward  = pSN_FLT->m_worldTransform.getN();
-						forward.m_x = 0;
-						Vector3 direction = _AngleAlongRamp;//pSN_FLT->m_worldTransform.getPos() - pSN_RLT->m_worldTransform.getPos();
-						direction.m_x = 0;
-
-						forward.m_x = 0;
-						forward.normalize();
-
-						float angle = acos((forward.dotProduct(direction))/(forward.length() * direction.length()));
-						float _Angle = angle * (3.14 /180);
-
-						if(_Angle != 0)
-							_Angle = -_Angle;
-
-						Vector3 angleSign = forward.crossProduct(direction);
-						int _Sign = 1;
-						if(angleSign.m_x > 0)
-							_Sign = -1;
-						_Angle *= (float)_Sign;
-
-						_Angle *= (angleSign.m_x/fabs(angleSign.m_x));
-						
-						////-ve turn down
-						////+VE turn up 
-						if(_Angle < 0)
-						{
-							pSN_body->m_base.turnUp(_Angle);
-							finalRotation= angle;
-							
-						}
-						else if(_Angle < 0)
-						{
-							pSN_body->m_base.turnUp(_Angle);
-						}
-					}
-					else
-						turnCount = 0;
-			
-					pSN_FLT->m_Physics->m_ForceList.clear();
-					pSN_FRT->m_Physics->m_ForceList.clear();
-					pSN_RLT->m_Physics->m_ForceList.clear();
-					pSN_RRT->m_Physics->m_ForceList.clear();
+				float angle = acos((forward.dotProduct(direction))/(forward.length() * direction.length()));
+				float _Angle = angle * (3.14 /180);
 				
+				////-ve turn down
+				////+VE turn up 
+				
+				pSN_body->m_base.turnUp(_Angle);
 			
-				}
+				
+			}
 		}
 	}
+}
