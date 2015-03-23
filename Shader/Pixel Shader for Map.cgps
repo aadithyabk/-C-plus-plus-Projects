@@ -1,3 +1,7 @@
+//Pixel shader to support the map feature for RTS game.
+//originally only black & white textures were supported on the engine.
+//I wrote this pixel shader to retain the color of the texture being loaded.
+
 #ifndef SampleWorkspace_StdMesh_Map_PS_cgps_h
 #define SampleWorkspace_StdMesh_Map_PS_cgps_h
 
@@ -18,7 +22,7 @@ float4 StdMesh_Map_PS(STD_MESH_PS_IN pIn)
 	float4 combinedColor = make_float4(r,g,b,a);
 	combinedColor.a = ( combinedColor.r + combinedColor.g + combinedColor.b ) * 0.3333;  //Takes the combined color and clips whatever is less than 0.333
 	
-    clip(combinedColor.a - 0.00001);													 //Fine tuning to adjust the transparency
+    clip(combinedColor.a - 0.00001);		//Fine tuning to adjust the transparency
     
     combinedColor.a = 0.0;
 
