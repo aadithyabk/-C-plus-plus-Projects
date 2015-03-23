@@ -1,3 +1,6 @@
+//This is the physics for a PvP based game that I did. I drew spheres as bounding volumes around different skeletal joints. 
+//The players could punch or block each other. So I checked for the collision between the spheres when punch animation is being played.
+//If the other player is not blocking which I get to know by the joint number with twhich the collision takes place, I reduce the health.
 
 void PhysicsManager::do_UPDATE(Events::Event *pEvt)
 {
