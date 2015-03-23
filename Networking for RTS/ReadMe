@@ -1,0 +1,18 @@
+This is a current project that I'm working on. I'm in charge of the networking the game play and character behaviour.
+There is a base class called pokemon which all characters inherit from and change load their specific mesh, skeleton and animation sets.
+States is base class which all the states for different characters inherit from. It has three functions OnEnter(), Update() and 
+OnExit() which is again overridden by different states. 
+
+Networking:
+The server maintains a ghostID for each character that is unique across all clients. When a character is spawned, a networkView for that
+character is created and is assigned a ghostID. When state/attribute of a character changes in one client, I send events to all the 
+clients indicating the ghostID and the parameter that needs to be changed in their instance of the game.
+
+The networking is stuctured in such a way that the first client to start the game is always the master. ALl the clients first send
+crucial events such "hitting another character" to the master. Master checks if the "hit" is actually possible by checking the position 
+of the two characters. If the master approves, the event is sent to rest of the clients and they update their game instances accordingly.
+
+
+ClientGameObjectManagerAddon.cpp contains the event handlers for different events that will be sent to all the clients. 
+Events.cpp contains the structure of the events that will be sent across the clients.
+
