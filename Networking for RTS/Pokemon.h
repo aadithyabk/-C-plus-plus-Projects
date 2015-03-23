@@ -1,3 +1,5 @@
+//This is the base class for different characters in the game.
+
 #ifndef _POKEMON_
 #define _POKEMON_
 
@@ -56,13 +58,16 @@ namespace CharacterControl{
 
 			int health;
 		    
+		    	//Current state for each pokemon is stored.
+		    	//When this is called on a particular pokemon, it will change its state to the next state
 			void ChangeState(CharacterControl::m_states nextState);
 			
-			void UpdateAttribute(int health);						    //Update Health			
-		    void UpdateAttribute(Vector3 position, Vector3 direction);	//Update Position and direction
+			void UpdateAttribute(int health);				 //Update Health			
+			void UpdateAttribute(Vector3 position, Vector3 direction);	//Update Position and direction
 
 			void SetStateFirstTime(m_states startState);
 
+			//update dunction that is configured to be called every frame.
 			PE_DECLARE_IMPLEMENT_EVENT_HANDLER_WRAPPER(do_UPDATE)
 			virtual void do_UPDATE(PE::Events::Event *pEvt);
 
