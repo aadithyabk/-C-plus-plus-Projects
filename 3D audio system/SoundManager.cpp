@@ -1,3 +1,12 @@
+//This is a game developed on the in-house engine. The sound system was developed from scratch because
+//the engine didn't support audio. There is a maze and there are three people stuck inside the maze. 
+//The player is from a rescue team and he needs to rescue the people inside the maze and all he has to navigate
+//through the maze is the Audio. So if a guy was stuck on the left most part of the maze then the user would hear
+//most of the sound on the left speaker and he would realize that he needs to go in that direction. 
+//The audio system makes use of DirectX APIs and I had to go through a whole lot of documentation on MSDN to get this done.
+//It also supports sound occlusion and echo.
+
+
 #include "SoundManager.h"
 #include "../FileSystem/FileReader.h"
 #include "PrimeEngine/Lua/LuaEnvironment.h"
