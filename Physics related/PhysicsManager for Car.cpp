@@ -167,22 +167,13 @@ void PhysicsManager::do_UPDATE(Events::Event *pEvt)
 							{
 								//Resolve collision with ramp
 
+								_SN1->m_Physics->m_state = Physics::ONRAMP;
+								
+								rampNormal = _SN2->normal; //Precalculated because the normal does not change. A triangle is constructed using the top of the ramp and cross product gives the normal going outwards
 
-								Vector3 collidedPoint = _SN2->m_worldTransform * point;
-								Vector3 NewPoint = Vector3(collidedPoint.m_x, collidedPoint.m_y, collidedPoint.m_z);
-								Vector3 Normal = NewPoint - collidedPoint;
-
-								_SN1->requiredPoint = _SN2->requiredPoint;
-
-
-
-								Normal.normalize();
-								Normal = Vector3(0, 1, 1);
-								Vector3 destination = Normal * 0.65;
-
-
-								_SN1->m_Physics->AddForce(Vector3(destination.m_x, destination.m_y, destination.m_z), hTemp);//m_ForceList.add(Vector3(destination.m_x,destination.m_y ,destination.m_z));
-								//_SN1->m_Physics->AddForce(Vector3(0,1.0,0),hTemp);//m_ForceList.add(Vector3(0,1.0,0));
+								//Add force along the normal of the ramp
+								_SN1->m_Physics->AddForce(Vector3(rampNormal.m_x, rampNormal.m_y, rampNormal.m_z), hTemp);
+								
 							}
 					}
 							
@@ -197,6 +188,8 @@ void PhysicsManager::do_UPDATE(Events::Event *pEvt)
 							Handle h2 = m_SceneNodes[j];
 							Vector3 centerTocenter = (_SN1->m_worldTransform.getPos())- (_SN2->m_worldTransform.getPos());
 							float centerDistance = centerTocenter.length();
+							
+							//Check for collision between tyres which have spheres around them
 							if(centerTocenter.length() < (radius + radius))
 							{
 								if(!collided)
@@ -224,6 +217,7 @@ void PhysicsManager::do_UPDATE(Events::Event *pEvt)
 	 for(int k =0; k < m_SceneNodes.m_size; k++)
 	  {
 		   SceneNode *_SN = m_SceneNodes[k].getObject<SceneNode>();
+		   //Calculate the resultant forces for each car
 		  if(_SN->IsCar == 1)
 			   if(_SN->m_Physics->carNum == 1)
 					_SN->pCar->do_calculateResultant(1);
@@ -238,7 +232,7 @@ void PhysicsManager::do_UPDATE(Events::Event *pEvt)
 
 void PhysicsManager::do_POST_UPDATE(Events::Event *pEvt)
 {
-	 //Draw bounding volumes	
+	 //Draw bounding volumes every frame	
 	 for(int i=0 ; i<m_SceneNodes.m_size ; i++)
 	 {
 		 Handle _SceneNode = m_SceneNodes[i];
@@ -262,12 +256,14 @@ void PhysicsManager::CreatePhysicsComponent(Handle _SceneNode, Mesh *_MeshData,b
 	_SceneNode.getObject<SceneNode>()->m_Physics = pPhysicsInstance;
 	_SceneNode.getObject<SceneNode>()->m_HasPhysics = true;
 	int tyreNum = 0;
+	
+	//Create the bounding box
 	pPhysicsInstance->CreateBB(_MeshData->m_hPositionBufferCPU.getObject<PositionBufferCPU>(),tyreNum);
 	pPhysicsInstance->m_IsKinematic = _IsKinematic;
 
 	m_SceneNodes.add(_SceneNode);
 
-	//pPhysicsInstance->DrawBox(_SceneNode);
+	
 }
 
 void PhysicsManager::CreatePhysicsComponent(Handle _SceneNode, int a)
@@ -281,6 +277,8 @@ void PhysicsManager::CreatePhysicsComponent(Handle _SceneNode, int a)
 	_SceneNode.getObject<SceneNode>()->m_Physics = pPhysicsInstance;
 	_SceneNode.getObject<SceneNode>()->m_Physics->carNum = j;
 	_SceneNode.getObject<SceneNode>()->m_HasPhysics = true;
+	
+	//Create Sphere as the bounding volume
 	pPhysicsInstance->CreateSphere(_SceneNode, a);
 
 	m_SceneNodes.add(_SceneNode);
@@ -313,7 +311,6 @@ bool PhysicsManager::Raycast(Vector3 _Point1, Vector3 _Point2, AxisAlignedBB _Bo
 	_PointOfIntersection->m_y = y;
 	_PointOfIntersection->m_z = z;
 
-	//_EachPlane->m_NormalVector.dotProduct(_Point1);
 
 
 	if(_Part2 == 0)
