@@ -32,10 +32,10 @@ DETAILED_MESH_SHADOWED_PS_IN DetailedMesh_Shadowed_VS(DETAILED_MESH_VS_IN vIn)
 	windEffect1Final = float4(0,0,0,0);
 	windEffect2Final = float4(0,0,0,0);
 
-	//2 SOLDIER WINDSOURCE
-	if(windSource0[3] == 1.0)
+	//if SOLDIER WINDSOURCE is enabled
+	if(soldierWindSource[3] == 1.0)
 	{
-		windSource = float4(windSource0[0], 0, windSource0[2], windSource0[3]);
+		windSource = float4(soldierWindSource[0], 0, soldierWindSource[2], soldierWindSource[3]);
 		windEffect = -1 * float3(windSource.x-position.x, windSource.y-position.y, windSource.z-position.z);
 		windIntensity = (windEffect.x*windEffect.x + windEffect.z*windEffect.z);
 		
@@ -46,9 +46,10 @@ DETAILED_MESH_SHADOWED_PS_IN DetailedMesh_Shadowed_VS(DETAILED_MESH_VS_IN vIn)
 		windEffect1Final = windEffect1Final * windIntensityRatio * 0.4;
 	}
 
-	if(windSource1[3] == 1.0)
+	//if camera wind source is enabled
+	if(cameraWindSource[3] == 1.0)
 	{
-		windSource = float4(windSource1[0], 0, windSource1[2], windSource1[3]);
+		windSource = float4(cameraWindSource[0], 0, cameraWindSource[2], cameraWindSource[3]);
 		windEffect = -1 * float3(windSource.x-position.x, windSource.y-position.y, windSource.z-position.z);
 		windIntensity = (windEffect.x*windEffect.x + windEffect.z*windEffect.z);
 		
