@@ -1,0 +1,27 @@
+This folder contains C++ code that is not related to games.
+
+Boggle:
+
+I found this problem online which I thought was very interesting. The problem is is to find the words that can be formed using a
+given Boggle board and a dictionary. The way I tried to solve it was by using a Trie and selective recursion. A trie is a 
+perfect data structure for pattern matching against a dictionary. Initially, I added all the words in the dictionary to a Trie.
+Starting with the first letter in the Boggle board as the string to be matched, the Trie is checked to see if there is a word
+starting with this string as the prefix. If there isn't, then there is no need to check any of the combination starting with
+that letter or prefix in general. 
+
+SocketProgramming:
+
+I wrote this file for a midterm exam. Only 3 students were able to retreieve the desired output in the given time and I was one 
+among them.
+For this exam, we were given a server(with some loop holes) which has to be hacked to retreive an image. It included the
+following tasks
+
+1) Broadcast a UDP message "where" to a known  for which the server replies "here". 
+2) use the reply from the server to determine its IP address. It was also told that the server listens for TCP connections
+   at (port from which it sent the UDP message + 1).
+3) After retreiving the port number for TCP, a connections should be established to retreive the password.
+4) If the server receives a string of the format "login:xxyy....zz" where xx = 00 and zz = 99, then it replies no or yes 
+   indicating the password
+5) Once this is retreived, image size had to be retreived by sending the string "image:<password>" to the server
+6) Then the server had to be requested for binary data by sending packet numbers. Since UDP was being used, there was a possibility
+   that the packets might get dropped. To handle this condition, an ACK mechanism had to setup. 
