@@ -7,7 +7,7 @@
 
 DETAILED_MESH_SHADOWED_PS_IN DetailedMesh_Shadowed_VS(DETAILED_MESH_VS_IN vIn)
 {
-    DETAILED_MESH_SHADOWED_PS_IN vOut;
+    	DETAILED_MESH_SHADOWED_PS_IN vOut;
 	float3 pos = vIn.iPosL;
 	float3 originalPos = pos;
 
@@ -33,9 +33,9 @@ DETAILED_MESH_SHADOWED_PS_IN DetailedMesh_Shadowed_VS(DETAILED_MESH_VS_IN vIn)
 	windEffect2Final = float4(0,0,0,0);
 
 	//if SOLDIER WINDSOURCE is enabled
-	if(soldierWindSource[3] == 1.0)
+	if(soldierWindSource1[3] == 1.0)
 	{
-		windSource = float4(soldierWindSource[0], 0, soldierWindSource[2], soldierWindSource[3]);
+		windSource = float4(soldierWindSourc1[0], 0, soldierWindSource1[2], soldierWindSource1[3]);
 		windEffect = -1 * float3(windSource.x-position.x, windSource.y-position.y, windSource.z-position.z);
 		windIntensity = (windEffect.x*windEffect.x + windEffect.z*windEffect.z);
 		
@@ -46,10 +46,10 @@ DETAILED_MESH_SHADOWED_PS_IN DetailedMesh_Shadowed_VS(DETAILED_MESH_VS_IN vIn)
 		windEffect1Final = windEffect1Final * windIntensityRatio * 0.4;
 	}
 
-	//if camera wind source is enabled
-	if(cameraWindSource[3] == 1.0)
+	//if second soldier wind source is enabled
+	if(soldierWindSource2[3] == 1.0)
 	{
-		windSource = float4(cameraWindSource[0], 0, cameraWindSource[2], cameraWindSource[3]);
+		windSource = float4(soldierWindSource2[0], 0, soldierWindSource2[2], soldierWindSource2[3]);
 		windEffect = -1 * float3(windSource.x-position.x, windSource.y-position.y, windSource.z-position.z);
 		windIntensity = (windEffect.x*windEffect.x + windEffect.z*windEffect.z);
 		
@@ -62,7 +62,7 @@ DETAILED_MESH_SHADOWED_PS_IN DetailedMesh_Shadowed_VS(DETAILED_MESH_VS_IN vIn)
 
 	//CAMERA WINDSOURCE
 	{
-		windSource = float4(windSource2[0], 0, windSource2[2], windSource2[3]);
+		windSource = float4(cameraWindSource[0], 0, cameraWindSource[2], cameraWindSource[3]);
 		windEffect = -1 * float3(windSource.x-position.x, windSource.y-position.y, windSource.z-position.z);
 		windIntensity = (windEffect.x*windEffect.x + windEffect.z*windEffect.z);
 		
@@ -84,9 +84,9 @@ DETAILED_MESH_SHADOWED_PS_IN DetailedMesh_Shadowed_VS(DETAILED_MESH_VS_IN vIn)
    	 vOut.iNormalW = mul(float4(vIn.iNormal, 0), W).xyz;	  
    	 vOut.iPosW =  mul(float4(pos, 1.0), W).xyz;		
    	 vOut.iTangentW = mul(float4(vIn.iTangent, 1.0), W).xyz;
-    	vOut.iTexCoord = vIn.iTexCoord;
+    	 vOut.iTexCoord = vIn.iTexCoord;
    	 vOut.iProjTexCoord = mul(float4(vOut.iPosW, 1.0), gLightWVP);
-	vOut.iTexCoord2 = vIn.iTexCoord2;
+	 vOut.iTexCoord2 = vIn.iTexCoord2;
     return vOut;
 }
 VS_wrapper_DETAILED_MESH_SHADOWED(DetailedMesh_Shadowed_VS)
