@@ -1,16 +1,4 @@
-#define NOMINMAX
 
-#include "RootSceneNode.h"
-
-#include "Light.h"
-#include "DrawList.h"
-
-#include "PrimeEngine/APIAbstraction/Effect/EffectManager.h"
-#include "../Lua/LuaEnvironment.h"
-#include "PrimeEngine/Render/ShaderActions/SetPerFrameConstantsShaderAction.h"
-
-#include "CameraManager.h"
-#include "CameraSceneNode.h"
 namespace PE {
 namespace Components {
 
