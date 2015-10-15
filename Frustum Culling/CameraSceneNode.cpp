@@ -50,37 +50,41 @@ void CameraSceneNode::do_CALCULATE_TRANSFORMATIONS(Events::Event *pEvt)
 
 	m_worldTransform2.moveForward(Z_ONLY_CAM_BIAS);
 
-	Vector3 pos2 = Vector3(m_worldTransform2.m[0][3], m_worldTransform2.m[1][3], m_worldTransform2.m[2][3]);
-	Vector3 n2 = Vector3(m_worldTransform2.m[0][2], m_worldTransform2.m[1][2], m_worldTransform2.m[2][2]);
-	Vector3 target2 = pos2 + n2;
-	Vector3 up2 = Vector3(m_worldTransform2.m[0][1], m_worldTransform2.m[1][1], m_worldTransform2.m[2][1]);
+	pos = Vector3(m_worldTransform2.m[0][3], m_worldTransform2.m[1][3], m_worldTransform2.m[2][3]);
+	n = Vector3(m_worldTransform2.m[0][2], m_worldTransform2.m[1][2], m_worldTransform2.m[2][2]);
+	target = pos2 + n2;
+	up = Vector3(m_worldTransform2.m[0][1], m_worldTransform2.m[1][1], m_worldTransform2.m[2][1]);
 
 	m_worldToViewTransform2 = CameraOps::CreateViewMatrix(pos2, target2, up2);
     
-    PrimitiveTypes::Float32 aspect = (PrimitiveTypes::Float32)(m_pContext->getGPUScreen()->getWidth()) / (PrimitiveTypes::Float32)(m_pContext->getGPUScreen()->getHeight());
+        PrimitiveTypes::Float32 aspect = (PrimitiveTypes::Float32)(m_pContext->getGPUScreen()->getWidth()) / (PrimitiveTypes::Float32)(m_pContext->getGPUScreen()->getHeight());
     
-    PrimitiveTypes::Float32 verticalFov = 0.33f * PrimitiveTypes::Constants::c_Pi_F32;
-    if (aspect < 1.0f)
-    {
-        //ios portrait view
-        static PrimitiveTypes::Float32 factor = 0.5f;
-        verticalFov *= factor;
-    }
+        PrimitiveTypes::Float32 verticalFov = 0.33f * PrimitiveTypes::Constants::c_Pi_F32;
+        if (aspect < 1.0f)
+        {
+             //ios portrait view
+             static PrimitiveTypes::Float32 factor = 0.5f;
+             verticalFov *= factor;
+        }
 
 	m_viewToProjectedTransform = CameraOps::CreateProjectionMatrix(verticalFov, 
-		aspect,
-		m_near, m_far);
+									       aspect,
+										m_near, m_far);
 	
 	
 	
-	float Hfar,Hnear,Wfar,Wnear;
+	float hFar,hNear,wFar,wNear;
 	float _FOV = 45.0f * 3.142/180;
 	
-	Hfar = 2 * tan(verticalFov/2) * m_far;									//Caluclate Height of far plane
-	Hnear = 2 * tan(verticalFov/2) * m_near;								//Calculate Height of near plane
-	Wnear = Hnear * (aspect);												//Width of near plane
-	Wfar  = Hfar * (aspect);												//Width of far plane
-	Vector3 color1 = Vector3(0.5f, 0.5f, 0);
+	//Caluclate Height of far plane
+	hFar = 2 * tan(verticalFov/2) * m_far;		
+	//Calculate Height of near plane
+	hNear = 2 * tan(verticalFov/2) * m_near;	
+	//Width of near plane
+	wNear = hNear * (aspect);
+	//Width of far plane
+	wFar  = hFar * (aspect);											
+	color = Vector3(0.5f, 0.5f, 0);
 	 
 	 //Calculate 4 points of the far plane
 	 
@@ -103,14 +107,14 @@ void CameraSceneNode::do_CALCULATE_TRANSFORMATIONS(Events::Event *pEvt)
 
 	//Draw the far plane
 	ipt = 0;
-	linepts[ipt++] = farTopLeft; linepts[ipt++] = color1;
-	linepts[ipt++] = farTopRight; linepts[ipt++] = color1;
-	linepts[ipt++] = farLowerLeft; linepts[ipt++] = color1;
-	linepts[ipt++] = farLowerRight; linepts[ipt++] = color1;
-	linepts[ipt++] = farTopLeft; linepts[ipt++] = color1;
-	linepts[ipt++] = farLowerLeft; linepts[ipt++] = color1;
-	linepts[ipt++] = farTopRight; linepts[ipt++] = color1;
-	linepts[ipt++] = farLowerRight; linepts[ipt++] = color1;
+	linepts[ipt++] = farTopLeft; linepts[ipt++] = color;
+	linepts[ipt++] = farTopRight; linepts[ipt++] = color;
+	linepts[ipt++] = farLowerLeft; linepts[ipt++] = color;
+	linepts[ipt++] = farLowerRight; linepts[ipt++] = color;
+	linepts[ipt++] = farTopLeft; linepts[ipt++] = color;
+	linepts[ipt++] = farLowerLeft; linepts[ipt++] = color;
+	linepts[ipt++] = farTopRight; linepts[ipt++] = color;
+	linepts[ipt++] = farLowerRight; linepts[ipt++] = color;
 
 	DebugRenderer::Instance()->createLineMesh(false, m, &linepts[0].m_x, 16, 0);
 
@@ -139,8 +143,8 @@ void CameraSceneNode::do_CALCULATE_TRANSFORMATIONS(Events::Event *pEvt)
 	ipt = 0;
 	linepts[ipt++] = nearTopLeft; linepts[ipt++] = color;
 	linepts[ipt++] = nearTopRight; linepts[ipt++] = color;
-	linepts[ipt++] = nearLowerLeft; linepts[ipt++] = color1;
-	linepts[ipt++] = nearLowerRight; linepts[ipt++] = color1;
+	linepts[ipt++] = nearLowerLeft; linepts[ipt++] = color;
+	linepts[ipt++] = nearLowerRight; linepts[ipt++] = color;
 	linepts[ipt++] = nearTopLeft; linepts[ipt++] = color;
 	linepts[ipt++] = nearLowerLeft; linepts[ipt++] = color;
 	linepts[ipt++] = nearTopRight; linepts[ipt++] = color;
@@ -152,10 +156,10 @@ void CameraSceneNode::do_CALCULATE_TRANSFORMATIONS(Events::Event *pEvt)
 	ipt = 0;
 	linepts[ipt++] = nearLowerLeft; linepts[ipt++] = color;
 	linepts[ipt++] = farLowerleft; linepts[ipt++] = color;
-	linepts[ipt++] = nearTopLeft; linepts[ipt++] = color1;
-	linepts[ipt++] = farTopLeft; linepts[ipt++] = color1;
-	linepts[ipt++] = nearTopRight; linepts[ipt++] = color1;
-	linepts[ipt++] = farTopRight; linepts[ipt++] = color1;
+	linepts[ipt++] = nearTopLeft; linepts[ipt++] = color;
+	linepts[ipt++] = farTopLeft; linepts[ipt++] = color;
+	linepts[ipt++] = nearTopRight; linepts[ipt++] = color;
+	linepts[ipt++] = farTopRight; linepts[ipt++] = color;
 	linepts[ipt++] = nearLowerRight; linepts[ipt++] = color;
 	linepts[ipt++] = farLowerRight; linepts[ipt++] = color;
 	
