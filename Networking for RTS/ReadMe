@@ -1,4 +1,10 @@
-This is a current project that I'm working on. I'm in charge of the networking the game play and character behaviour.
+This is a project that I'm really proud of. It is an MOBA/RTS and I was a gameplay/network engineer for this project. 
+The reason I am proud of is because I implemented various networking features from ground up and these are the features that are
+present in some of the top multiplayer games. It includes prediction and simulation of movement on the client and the server 
+corrects the client in case of high latency. For this to happen, there had to be time synchronization between the client 
+and the server.
+
+
 There is a base class called pokemon which all characters inherit from and change load their specific mesh, skeleton and animation sets.
 States is base class which all the states for different characters inherit from. It has three functions OnEnter(), Update() and 
 OnExit() which is again overridden by different states. 
@@ -14,7 +20,4 @@ The networking is stuctured in such a way that the first client to start the gam
 crucial events such "hitting another character" to the master. Master checks if the "hit" is actually possible by checking the position 
 of the two characters. If the master approves, the event is sent to rest of the clients and they update their game instances accordingly.
 
-
-ClientGameObjectManagerAddon.cpp contains the event handlers for different events that will be sent to all the clients. 
-Events.cpp contains the structure of the events that will be sent across the clients.
 
