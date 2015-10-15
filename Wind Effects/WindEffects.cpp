@@ -59,38 +59,38 @@ void RootSceneNode::do_GATHER_DRAWCALLS(Events::Event *pEvt)
 				//Source of wind is the position of soldier
 				if(i == 0)
 				{
-					p->m_data.windSource0[0] = soldier->m_base.getPos().m_x;
-					p->m_data.windSource0[1] = soldier->m_base.getPos().m_y;
-					p->m_data.windSource0[2] = soldier->m_base.getPos().m_z;
-					p->m_data.windSource0[3] = 1.0f;
+					p->m_data.soldierWindSource1[0] = soldier->m_base.getPos().m_x;
+					p->m_data.soldierWindSource1[1] = soldier->m_base.getPos().m_y;
+					p->m_data.soldierWindSource1[2] = soldier->m_base.getPos().m_z;
+					p->m_data.soldierWindSource1[3] = 1.0f;
 				}
 				else
 				{
-					p->m_data.windSource1[0] = soldier->m_base.getPos().m_x;
-					p->m_data.windSource1[1] = soldier->m_base.getPos().m_y;
-					p->m_data.windSource1[2] = soldier->m_base.getPos().m_z;
-					p->m_data.windSource1[3] = 1.0f;
+					p->m_data.soldierWindSource2[0] = soldier->m_base.getPos().m_x;
+					p->m_data.soldierWindSource2[1] = soldier->m_base.getPos().m_y;
+					p->m_data.soldierWindSource2[2] = soldier->m_base.getPos().m_z;
+					p->m_data.soldierWindSource2[3] = 1.0f;
 				}
 			}
 		}
 		else
 		{
-			p->m_data.windSource0[0] = 0.0f;
-			p->m_data.windSource0[1] = 0.0f;
-			p->m_data.windSource0[2] = 0.0f;
-			p->m_data.windSource0[3] = 0.0f;
+			p->m_data.soldierWindSource1[0] = 0.0f;
+			p->m_data.soldierWindSource1[1] = 0.0f;
+			p->m_data.soldierWindSource1[2] = 0.0f;
+			p->m_data.soldierWindSource1[3] = 0.0f;
 			
 			
-			p->m_data.windSource1[0] = 0.0f;
-			p->m_data.windSource1[1] = 0.0f;
-			p->m_data.windSource1[2] = 0.0f;
-			p->m_data.windSource1[3] = 0.0f;
+			p->m_data.cameraWindSource2[0] = 0.0f;
+			p->m_data.cameraWindSource2[1] = 0.0f;
+			p->m_data.cameraWindSource2[2] = 0.0f;
+			p->m_data.cameraWindSource2[3] = 0.0f;
 		}
 		//The third wind source is the camera itself.
-		p->m_data.windSource2[0] = cameraPosition.m_x;
-		p->m_data.windSource2[1] = cameraPosition.m_y;
-		p->m_data.windSource2[2] = cameraPosition.m_z;
-		p->m_data.windSource2[3] = 1.0f;
+		p->m_data.cameraWindSource[0] = cameraPosition.m_x;
+		p->m_data.cameraWindSource[1] = cameraPosition.m_y;
+		p->m_data.cameraWindSource[2] = cameraPosition.m_z;
+		p->m_data.cameraWindSource[3] = 1.0f;
 		p->m_data.keyToggle[0] = m_toggle;
 		p->m_data.keyToggle[1] = m_intensity;
 		#endif
