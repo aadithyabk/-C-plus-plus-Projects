@@ -111,7 +111,9 @@ void GetImage(SOCKET udpSocket, int imageSize,  sockaddr_in  destinationAddr, so
 
 	while (receivedImageSize != imageSize)
 	{
-  		//Tell the server the next message we want. The message string will indicate the packet number
+  		//Tell the server the next message we want. The message string will indicate the packet number.
+  		//Asking for packet one tells the server that packet 0 has been received. If packet 0 was dropped,
+  		//request for packet 0 had to be sent again until its received
   		if ((bytesSent = sendto(udpSocket, message, strlen(message), 0, (SOCKADDR*)&destinationAddr, sizeof(destinationAddr))) == -1)
   		{
   			wprintf(L"broadcast sendto failed with error: %d\n", WSAGetLastError());
@@ -234,6 +236,7 @@ int main()
   
   	//It is known that server is listening at port 4000
   	broadcastToAddr.sin_family = AF_INET;
+  	//Given port number
   	broadcastToAddr.sin_port = htons(4000);
   	inet_pton(AF_INET, "255.255.255.255", &(broadcastToAddr.sin_addr));
   	memset(broadcastToAddr.sin_zero, '\0', sizeof broadcastAddr.sin_zero);
@@ -269,6 +272,7 @@ int main()
   	//we now know the port at which server is waiting for TCP and also the IP address of server
   	int port = ntohs(serverAddr.sin_port);
   	serverAddr.sin_family = AF_INET;
+  	//Server listens for TCP at port + 1
   	serverAddr.sin_port = htons(port + 1);
   
   	if (connect(tcpSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) < 0)		//Connect to that IP = google.com
