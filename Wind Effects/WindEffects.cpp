@@ -2,7 +2,7 @@
 namespace PE {
 namespace Components {
 
-void RootSceneNode::do_GATHER_DRAWCALLS(Events::Event *pEvt)
+void WindEffects::do_GATHER_DRAWCALLS(Events::Event *pEvt)
 {
 	DrawList *pDrawList = NULL;
 	bool zOnly = pEvt->isInstanceOf<Events::Event_GATHER_DRAWCALLS_Z_ONLY>();
