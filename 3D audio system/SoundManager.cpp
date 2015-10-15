@@ -141,7 +141,7 @@ void SoundManager::GenerateAudioPathName(PE::GameContext &context, const char *f
 	}
 	else
 	{
-		// if package is not provided default to Default package
+		// if package is not provided,append default to Default package
 #if APIABSTRACTION_IOS
 		StringOps::concat(context.getMainFunctionArgs()->gameProjRoot(), "AssetsOut/Default/", out_path, len);
 		StringOps::concat(out_path, assetType, out_path, len);
@@ -212,61 +212,55 @@ HRESULT SoundManager::FindChunk(HANDLE hFile, DWORD fourcc, DWORD & dwChunkSize,
 	
 }
 
-HRESULT SoundManager::ReadChunkData(HANDLE hFile, void * buffer, DWORD buffersize, DWORD bufferoffset)
+HRESULT SoundManager::ReadChunkData(HANDLE hFile, void * buffer, DWORD bufferSize, DWORD bufferOffset)
 {
 	HRESULT hr = S_OK;
-	if( INVALID_SET_FILE_POINTER == SetFilePointer( hFile, bufferoffset, NULL, FILE_BEGIN ) )
+	if( INVALID_SET_FILE_POINTER == SetFilePointer( hFile, bufferOffset, NULL, FILE_BEGIN ) )
 		return HRESULT_FROM_WIN32( GetLastError() );
 	DWORD dwRead;
-	if( 0 == ReadFile( hFile, buffer, buffersize, &dwRead, NULL ) )
+	if( 0 == ReadFile( hFile, buffer, bufferSize, &dwRead, NULL ) )
 		hr = HRESULT_FROM_WIN32( GetLastError() );
 	return hr;
 }
 
 
-void SoundManager::MSDNtype(BYTE * pDataBuffer, const char* filename)
+void SoundManager::ReadFromFile(BYTE * pDataBuffer, const char* fileName)
 {
 		DWORD dwChunkSize;
 		DWORD dwChunkPosition;
 		//check the file type, should be fourccWAVE or 'XWMA'
 		DWORD filetype;
-		static int i = 0;
-		GenerateAudioPathName(*m_pContext, filename, "Default", "Sound", PEString::s_buf, PEString::BUF_SIZE);
+		GenerateAudioPathName(*m_pContext, fileName, "Default", "Sound", PEString::s_buf, PEString::BUF_SIZE);
 		
 		TCHAR * strFileName = __TEXT(PEString::s_buf);
 		HRESULT hr;
-		HANDLE hfile = CreateFile(strFileName, GENERIC_READ,0,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL);
+		HANDLE hFile = CreateFile(strFileName, GENERIC_READ,0,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL);
 		
 		if (hfile == INVALID_HANDLE_VALUE)
 		   {
 				hr = HRESULT_FROM_WIN32( GetLastError() );
 		   }
-		if( INVALID_SET_FILE_POINTER == SetFilePointer( hfile, 0, NULL, FILE_BEGIN ) )
+		if( INVALID_SET_FILE_POINTER == SetFilePointer( hFile, 0, NULL, FILE_BEGIN ) )
 			hr =  HRESULT_FROM_WIN32( GetLastError() );
 
-		HRESULT hr1 = FindChunk(hfile, fourccRIFF,dwChunkSize,dwChunkPosition);
-		hr1 = ReadChunkData(hfile,&filetype,sizeof(DWORD),dwChunkPosition);
-		if (filetype != fourccWAVE) // #define fourccWAVE 'EVAW'
-		 PEINFO("");
-		
+		HRESULT hr = FindChunk(hFile, fourccRIFF,dwChunkSize,dwChunkPosition);
+		hr = ReadChunkData(hfile,&filetype,sizeof(DWORD),dwChunkPosition);
+
 		hr = FindChunk(hfile,fourccFMT, dwChunkSize, dwChunkPosition );
 		hr = ReadChunkData(hfile, &wfx, dwChunkSize, dwChunkPosition );	
-
-
-		//look for 'RIFF' chunk identifier
-		/*inFile.seekg(0, std::ios::beg);
-		inFile.read(reinterpret_cast<char*>(&dwChunkId), sizeof(dwChunkId));*/
+		
 		SAFE_DELETE_ARRAY(pDataBuffer);
-
 
 		hr = FindChunk(hfile,fourccDATA,dwChunkSize, dwChunkPosition );
 		pDataBuffer = new BYTE[dwChunkSize];
 		hr = ReadChunkData(hfile, pDataBuffer, dwChunkSize, dwChunkPosition);
 
-		buffer.AudioBytes = dwChunkSize;  //buffer containing audio data
-		buffer.pAudioData = pDataBuffer;  //size of the audio buffer in bytes
-		buffer.Flags = XAUDIO2_END_OF_STREAM; // tell the source voice not to expect any data after this buffer
-		i++;
+		//buffer containing audio data
+		buffer.AudioBytes = dwChunkSize;  
+		//size of the audio buffer in bytes
+		buffer.pAudioData = pDataBuffer;  
+		 // tell the source voice not to expect any data after this buffer
+		buffer.Flags = XAUDIO2_END_OF_STREAM;
 		CloseHandle(hfile);
 }
 
@@ -371,8 +365,8 @@ HRESULT SoundManager::InitAudio(Vector3 listenerPos, Vector3 emitterPos, const f
 	XAUDIO2_EFFECT_CHAIN effectChain = { 1, effects };
 
 	if( FAILED( hr = g_audioState.pXAudio2->CreateSubmixVoice( &g_audioState.pSubmixVoice, 1,
-															   details.InputSampleRate, 0, 0,
-															   NULL, &effectChain ) ) )
+											details.InputSampleRate, 0, 0,
+												 NULL, &effectChain ) ) )
 	{
 		SAFE_RELEASE( g_audioState.pXAudio2 );
 		SAFE_RELEASE( g_audioState.pReverbEffect );
@@ -492,7 +486,7 @@ HRESULT SoundManager::InitAudio(Vector3 listenerPos, Vector3 emitterPos, const f
 
 	//
 	// Done
-	//
+	
 	g_audioState.bInitialized = true;
 
 	return S_OK;
@@ -525,7 +519,7 @@ HRESULT SoundManager::PrepareAudio(SoundManager* soundManager,const char* filena
 	const XAUDIO2_VOICE_SENDS sendList = { 2, sendDescriptors };
 
 	BYTE* buff = NULL;
-	soundManager->MSDNtype(buff,filename);
+	soundManager->ReadFromFile(buff,filename);
 	HRESULT hr;
 	if(hr = FAILED(g_audioState.pXAudio2->CreateSourceVoice( &g_audioState.pSourceVoice, (WAVEFORMATEX*)&wfx, 0,2.0f, NULL, &sendList )))
 		hr = HRESULT_FROM_WIN32( GetLastError() );
